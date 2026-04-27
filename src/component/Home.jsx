@@ -41,9 +41,9 @@ const Home = () => {
           </motion.span>
 
           <motion.a
-            href="public\sushil resume.pdf"
+            href="sushil resume.pdf"
             class="rounded-[10px] relative group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-[#5b0f7c]   border-[#211530] text-white overflow-hidden w-[10rem] h-[2.8rem] flex gap-3 "
-            download="Sushil CV"
+            download="Sushil-resume"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
@@ -69,7 +69,7 @@ const Home = () => {
                   </span>
                 </div>
 
-                {/* Vertical Separator - only shows between items */}
+              
                 {index !== numberdata.length - 1 && (
                   <div className="h-12 w-[1px] bg-zinc-700 mx-4" />
                 )}
@@ -93,7 +93,7 @@ const Home = () => {
         </motion.div>
       </div>
       <motion.div
-        // Entire component bounces together
+       
         animate={{ y: [0, 18, 0] }}
         transition={{
           duration: 2,
@@ -102,13 +102,12 @@ const Home = () => {
         }}
         className="absolute bottom-[9rem] left-1/2 -translate-x-1/2 flex flex-col items-center cursor-default z-10"
       >
-        {/* Text matching the gray/blue tint in your image */}
+      
         <span className="text-[#ebeff4] text-lg  mb-1 font-thin">
           Scroll to explore
         </span>
 
-        {/* Light purple arrow icon */}
-
+  
         <SlArrowDown className="text-[#e1d8ea] text-4xl" />
       </motion.div>
     </section>
