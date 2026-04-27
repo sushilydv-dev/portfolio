@@ -43,7 +43,7 @@ const Home = () => {
           <motion.a
             href="/sushil-resume.pdf"
             class="rounded-[10px] relative group items-center justify-center px-3.5 py-2 m-1 cursor-pointer border-b-4 border-l-2 active:border-purple-600 active:shadow-none shadow-lg bg-[#5b0f7c]   border-[#211530] text-white overflow-hidden w-[10rem] h-[2.8rem] flex gap-3 "
-            download="Sushil-resume"
+            download="sushil-resume"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.9 }}
