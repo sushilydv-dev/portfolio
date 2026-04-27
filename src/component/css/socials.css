@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+.social-container{
+    
+    padding: .5rem 0;
+    
+}
+.social{
+    transition: transform ease .2s;
+}
+.social:hover{
+    transform: scale(1.2);
+}
+.first{
+      font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+ 
+  letter-spacing: 2px;
+  color: white;
+}
