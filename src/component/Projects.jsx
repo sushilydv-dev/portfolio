@@ -13,7 +13,7 @@ const projectData = [
     image: neurovault,
     description:
       "AI document intelligence platform focused on source transparency and cited data analysis.",
-    site:"#",
+    site:"https://neurovault-xi.vercel.app",
     git: "https://github.com/sushilydv-dev/neurovault",
     category: "Next.js / LLM",
   },
