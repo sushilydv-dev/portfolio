@@ -40,7 +40,7 @@ const projectData = [
     image: portfolio,
     description:
       "Modern, high-performance portfolio crafted with React and motion-heavy framer animations.",
-       site:"https://sushildev.com",
+       site:"https://sushildev.in",
     git: "https://github.com/sushilydv-dev/portfolio",
     category: "React JS",
   },
