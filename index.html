@@ -11,10 +11,324 @@
       try {
         document.documentElement.dataset.theme = localStorage.getItem('theme-choice') === 'dark' ? 'dark' : 'light'
       } catch (e) {}
+      // Loading screen: once per visit (tab session), skipped with reduced motion. Decided here,
+      // before paint, so the page never flashes before the loader covers it.
+      try {
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !sessionStorage.getItem('intro-seen'))
+          document.documentElement.classList.add('is-loading')
+      } catch (e) {}
     </script>
+    <style>
+      /* Loading screen (markup + script at the top of <body>). Plain CSS so it shows before the
+         app's code and styles arrive. Colours mirror the theme tokens in src/styles/index.css. */
+      .loader {
+        --l-canvas: #f6f6f3;
+        --l-ink: #1a1a1a;
+        --l-muted: #5c5c5a;
+        --l-line: #e0e0dc;
+        --l-accent: #2747e6;
+      }
+      [data-theme='dark'] .loader {
+        --l-canvas: #121212;
+        --l-ink: #ececea;
+        --l-muted: #a1a19e;
+        --l-line: #2c2c2c;
+        --l-accent: #7b93ff;
+      }
+      html.is-loading {
+        overflow: hidden;
+        background: var(--l-canvas, #f6f6f3);
+      }
+      /* Hold the page's entrance animations (the hero's letter rise) until the loader lifts */
+      html.is-loading #root *,
+      html.is-loading #root *::before,
+      html.is-loading #root *::after {
+        animation-play-state: paused !important;
+      }
+      /* Shown only while loading, and while it lifts away after the page is released */
+      html:not(.is-loading) .loader:not(.is-lifting) {
+        display: none;
+      }
+      .loader {
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 1.5rem;
+        background: var(--l-canvas);
+        color: var(--l-ink);
+        font-family: 'Chillax', system-ui, 'Segoe UI', Roboto, sans-serif;
+        clip-path: inset(0 0 0 0);
+      }
+      @media (min-width: 768px) {
+        .loader {
+          padding: 1.5rem 3rem 2.5rem;
+        }
+      }
+      @media print {
+        .loader {
+          display: none !important;
+        }
+      }
+      .loader__top {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--l-muted);
+        animation: l-fade 0.6s 0.1s both;
+      }
+      .loader__top b {
+        color: var(--l-ink);
+        font-weight: 600;
+      }
+
+      /* The fox peeks up from behind the progress line */
+      .loader__stage {
+        display: grid;
+        justify-items: center;
+      }
+      .loader__window {
+        width: 7.5rem;
+        height: 6.4rem;
+        overflow: hidden;
+      }
+      .loader__fox {
+        display: block;
+        width: 100%;
+        height: auto;
+        transform: translateY(105%);
+        animation:
+          l-peek 0.9s 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+          l-bob 2.4s 1.2s ease-in-out infinite;
+      }
+      .loader__ear--l {
+        transform-origin: 38px 40px;
+        animation: l-twitch 2.6s 1.4s infinite;
+      }
+      .loader__ear--r {
+        transform-origin: 82px 40px;
+        animation: l-twitch 2.6s 2.2s infinite;
+      }
+      .loader__eye {
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: l-blink 3.2s 1.6s infinite;
+      }
+      .loader__track {
+        position: relative;
+        width: min(20rem, 70vw);
+        height: 2px;
+        background: var(--l-line);
+        overflow: hidden;
+      }
+      .loader__fill {
+        position: absolute;
+        inset: 0;
+        background: var(--l-accent);
+        box-shadow: 0 0 8px var(--l-accent);
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+      .loader__note {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        color: var(--l-muted);
+        animation: l-fade 0.6s 0.5s both;
+      }
+
+      .loader__bottom {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .loader__name {
+        font-size: clamp(1rem, 2.4vw, 1.4rem);
+        font-weight: 500;
+        line-height: 1.2;
+        animation: l-fade 0.6s 0.2s both;
+      }
+      .loader__name span {
+        display: block;
+        color: var(--l-muted);
+        font-weight: 400;
+      }
+      .loader__count {
+        font-family: 'Dirtyline', 'Chillax', system-ui, sans-serif;
+        font-size: clamp(4.5rem, 16vw, 11rem);
+        line-height: 0.8;
+        font-variant-numeric: tabular-nums;
+        letter-spacing: -0.02em;
+      }
+      .loader__count sup {
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        font-size: 0.75rem;
+        letter-spacing: 0.1em;
+        color: var(--l-accent);
+        vertical-align: top;
+        margin-left: 0.25rem;
+      }
+
+      /* Exit: the fox ducks back down, then the screen lifts away upward */
+      .loader.is-done .loader__fox {
+        animation: l-duck 0.35s cubic-bezier(0.55, 0, 1, 0.45) forwards;
+      }
+      .loader.is-done .loader__top,
+      .loader.is-done .loader__note,
+      .loader.is-done .loader__name {
+        animation: l-out 0.3s forwards;
+      }
+      .loader.is-lifting {
+        transition: clip-path 0.75s cubic-bezier(0.76, 0, 0.24, 1);
+        clip-path: inset(0 0 100% 0) !important;
+      }
+
+      @keyframes l-peek {
+        to {
+          transform: translateY(6%);
+        }
+      }
+      @keyframes l-bob {
+        0%,
+        100% {
+          transform: translateY(6%);
+        }
+        50% {
+          transform: translateY(10%);
+        }
+      }
+      @keyframes l-duck {
+        from {
+          transform: translateY(6%);
+        }
+        to {
+          transform: translateY(105%);
+        }
+      }
+      @keyframes l-twitch {
+        0%,
+        86%,
+        100% {
+          transform: rotate(0);
+        }
+        90% {
+          transform: rotate(-9deg);
+        }
+        94% {
+          transform: rotate(4deg);
+        }
+      }
+      @keyframes l-blink {
+        0%,
+        92%,
+        100% {
+          transform: scaleY(1);
+        }
+        95% {
+          transform: scaleY(0.1);
+        }
+      }
+      @keyframes l-fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+      }
+      @keyframes l-out {
+        to {
+          opacity: 0;
+          transform: translateY(-8px);
+        }
+      }
+    </style>
     <title>Portfolio</title>
   </head>
   <body>
+    <div class="loader" id="loader" role="status" aria-label="Loading">
+      <div class="loader__top">
+        <span><b>Sushil Yadav</b></span>
+        <span>Portfolio &copy;2026</span>
+      </div>
+
+      <div class="loader__stage" aria-hidden="true">
+        <div class="loader__window">
+          <!-- Flat take on the site's 3D fox mascot (same palette as src/features/mascot/fox.js) -->
+          <svg class="loader__fox" viewBox="0 0 120 102">
+            <g class="loader__ear--l">
+              <path d="M22 50 L30 6 L56 34 Z" fill="#e9762b" stroke="#e9762b" stroke-width="6" stroke-linejoin="round" />
+              <path d="M30 38 L32 18 L45 32 Z" fill="#3a2820" stroke="#3a2820" stroke-width="3" stroke-linejoin="round" />
+            </g>
+            <g class="loader__ear--r">
+              <path d="M98 50 L90 6 L64 34 Z" fill="#e9762b" stroke="#e9762b" stroke-width="6" stroke-linejoin="round" />
+              <path d="M90 38 L88 18 L75 32 Z" fill="#3a2820" stroke="#3a2820" stroke-width="3" stroke-linejoin="round" />
+            </g>
+            <ellipse cx="60" cy="64" rx="42" ry="35" fill="#e9762b" />
+            <path d="M18 66 Q40 60 60 90 Q80 60 102 66 Q98 99 60 100 Q22 99 18 66 Z" fill="#fbf6ee" />
+            <ellipse class="loader__eye" cx="43" cy="62" rx="4.2" ry="5.6" fill="#1c1412" />
+            <ellipse class="loader__eye" cx="77" cy="62" rx="4.2" ry="5.6" fill="#1c1412" />
+            <circle cx="44.6" cy="60" r="1.4" fill="#fff" />
+            <circle cx="78.6" cy="60" r="1.4" fill="#fff" />
+            <circle cx="34" cy="75" r="5" fill="#ff9a8f" opacity="0.45" />
+            <circle cx="86" cy="75" r="5" fill="#ff9a8f" opacity="0.45" />
+            <ellipse cx="60" cy="86" rx="5.5" ry="3.8" fill="#1c1412" />
+          </svg>
+        </div>
+        <div class="loader__track"><div class="loader__fill" id="loader-fill"></div></div>
+        <p class="loader__note">Waking up the fox&hellip;</p>
+      </div>
+
+      <div class="loader__bottom">
+        <div class="loader__name">Software Development Engineer<span>Web apps &amp; private AI</span></div>
+        <div class="loader__count" aria-hidden="true"><span id="loader-count">0</span><sup>%</sup></div>
+      </div>
+    </div>
+    <script>
+      // Counter: eases toward 90% while the page loads, finishes once it has loaded (shown at
+      // least MIN ms so it never just flashes), then the fox ducks and the screen lifts away.
+      ;(function () {
+        var html = document.documentElement
+        var el = document.getElementById('loader')
+        if (!html.classList.contains('is-loading')) return el.remove()
+        var count = document.getElementById('loader-count')
+        var fill = document.getElementById('loader-fill')
+        var MIN = 1600, MAX = 6000
+        var start = performance.now(), shown = 0, loaded = false, done = false
+        addEventListener('load', function () { loaded = true })
+
+        function frame(now) {
+          var t = now - start
+          if (t > MAX) loaded = true // slow connection: don't hold the visitor forever
+          var goal = loaded && t >= MIN ? 100 : 90 * (1 - Math.pow(1 - Math.min(t / MIN, 1), 3))
+          shown += (goal - shown) * 0.12
+          if (goal === 100 && shown > 99.5) shown = 100
+          count.textContent = Math.floor(shown)
+          fill.style.transform = 'scaleX(' + shown / 100 + ')'
+          if (shown < 100) return requestAnimationFrame(frame)
+          if (done) return
+          done = true
+          setTimeout(finish, 250)
+        }
+
+        function finish() {
+          el.classList.add('is-done')
+          setTimeout(function () {
+            el.classList.add('is-lifting')
+            // Let the page's entrance animations play as the screen lifts
+            html.classList.remove('is-loading')
+            setTimeout(function () { el.remove() }, 800)
+          }, 380)
+          try { sessionStorage.setItem('intro-seen', '1') } catch (e) {}
+        }
+
+        requestAnimationFrame(frame)
+      })()
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
