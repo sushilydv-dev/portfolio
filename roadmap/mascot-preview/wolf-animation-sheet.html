@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wolf Cub Animation Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  /* A tool-like sheet: the cub is the only colour on the page */
+  :root {
+    --bg: #f3f3f0; --panel: #ffffff; --stage: #ecebe6; --ground: #d9d7cf; --plat: #ffffff; --plat-line: #d2d0c8;
+    --ink: #1c1c1a; --muted: #5d5d59; --line: #dcdad3; --accent: #2747e6; --accent-ink: #ffffff; --dust: #b4b1a8; --tile: #f8f7f4;
+    --mini-light: #f6f6f3; --mini-dark: #121212;
+    --fx: #8b8a84; --heart: #e8455b; --tear: #6fb7e8; --spark: #f4b528;
+
+    /* Grey wolf cub (default colourway) */
+    --w-body: #8b919a; --w-light: #b4b9c1; --w-deep: #6a7079; --w-shade: #6a7079; --w-leg: #9da2aa; --w-cream: #f7f5f1; --w-cream-deep: #dcd8d2; --w-dark: #1f2228;
+    --w-tip: #5d636c; --w-inner: #d9d3cf; --w-iris: #6aaad3; --w-iris-deep: #234f7a; --w-tongue: #ef7b89; --w-mouth: #5a2a33; --w-blush: #ff9aa8;
+
+    --font-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+    --font-body: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121212; --panel: #1b1b1b; --stage: #171717; --ground: #2e2e2c; --plat: #232322; --plat-line: #34342f;
+      --ink: #ececea; --muted: #a1a19e; --line: #2c2c2a; --accent: #7b93ff; --accent-ink: #121212; --dust: #4e4e4a; --tile: #1f1f1e; --fx: #8d8c86;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121212; --panel: #1b1b1b; --stage: #171717; --ground: #2e2e2c; --plat: #232322; --plat-line: #34342f;
+    --ink: #ececea; --muted: #a1a19e; --line: #2c2c2a; --accent: #7b93ff; --accent-ink: #121212; --dust: #4e4e4a; --tile: #1f1f1e; --fx: #8d8c86;
+    color-scheme: dark;
+  }
+  /* Colourways */
+  :root[data-coat="arctic"] { --w-body: #e6e9ec; --w-light: #ffffff; --w-deep: #c3cad1; --w-shade: #c3cad1; --w-leg: #eef0f2; --w-cream: #ffffff; --w-cream-deep: #e3e6e9; --w-tip: #b3bcc6; --w-iris: #74b4e0; }
+  :root[data-coat="timber"] { --w-body: #957559; --w-light: #c3a283; --w-deep: #6e5239; --w-shade: #6e5239; --w-leg: #a6876a; --w-cream: #f6ead9; --w-cream-deep: #dfcfb8; --w-tip: #4a372a; --w-iris: #6fa6cf; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--font-body); }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 32px max(16px, env(safe-area-inset-right, 0px)) 64px max(16px, env(safe-area-inset-left, 0px)); display: grid; gap: 30px; }
+  header { display: grid; gap: 6px; max-width: 72ch; }
+  .eyebrow { margin: 0; font: 500 12px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  h1 { margin: 0; font: 800 clamp(30px, 5vw, 46px)/1.05 var(--font-display); letter-spacing: -.02em; }
+  .lede { margin: 0; color: var(--muted); }
+
+  .top { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 20px; align-items: start; }
+  @media (max-width: 880px) { .top { grid-template-columns: minmax(0, 1fr); } }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; min-width: 0; }
+  #stage { display: block; width: 100%; height: auto; background: var(--stage); }
+  .bar { display: flex; flex-wrap: wrap; gap: 14px 20px; align-items: center; justify-content: space-between; padding: 14px 18px; border-top: 1px solid var(--line); }
+  .now { min-width: 0; display: grid; gap: 2px; flex: 1 1 280px; }
+  .now h2 { margin: 0; font: 700 20px/1.2 var(--font-display); }
+  .now p { margin: 0; color: var(--muted); font-size: 14px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  button { font: inherit; color: inherit; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { height: 32px; padding: 0 11px; border: 0; background: transparent; font: 500 13px var(--font-mono); color: var(--muted); cursor: pointer; }
+  .seg button + button { border-left: 1px solid var(--line); }
+  .seg button[aria-pressed="true"] { background: var(--ink); color: var(--panel); }
+  .check { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; color: var(--muted); cursor: pointer; }
+  .check input { accent-color: var(--accent); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .side { display: grid; gap: 20px; min-width: 0; }
+  .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; display: grid; gap: 12px; }
+  .panel h3, .section h3 { margin: 0; font: 500 12px/1.4 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .note { margin: 0; font-size: 13px; color: var(--muted); }
+  .sizes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .size { margin: 0; display: grid; gap: 6px; }
+  .size .box { height: 80px; border-radius: 10px; display: grid; place-items: end center; padding-bottom: 12px; border: 1px solid var(--line); }
+  .size.light .box { background: var(--mini-light); }
+  .size.dark .box { background: var(--mini-dark); }
+  .size svg { display: block; overflow: visible; }
+  .size figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+  .swatches { display: grid; gap: 8px; }
+  .swatch { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--line); background: transparent; cursor: pointer; text-align: left; }
+  .swatch[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .dots { display: inline-flex; }
+  .dots i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--panel); margin-left: -5px; }
+  .dots i:first-child { margin-left: 0; }
+  .swatch span { font-size: 14px; font-weight: 500; }
+
+  .section { display: grid; gap: 14px; }
+  .section > h2 { margin: 0; font: 700 22px/1.2 var(--font-display); }
+  .section > p { margin: 0; color: var(--muted); max-width: 72ch; }
+  .group { display: grid; gap: 10px; }
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .tile { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: grid; gap: 6px; cursor: pointer; text-align: left; }
+  .tile[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .tile svg { width: 100%; height: auto; display: block; background: var(--tile); border-radius: 8px; }
+  .tile b { font: 600 14px/1.25 var(--font-body); padding: 0 4px; }
+  .tile small { color: var(--muted); font-size: 12px; line-height: 1.35; padding: 0 4px 4px; }
+  .faces { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 10px; }
+  .face { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 8px; display: grid; gap: 4px; justify-items: center; }
+  .face svg { width: 84px; height: 84px; display: block; background: var(--tile); border-radius: 50%; }
+  .face figcaption { font-size: 12px; font-weight: 600; }
+  .face small { font: 11px var(--font-mono); color: var(--muted); text-align: center; }
+  .facts { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; }
+  .fact { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
+  .fact b { display: block; margin-bottom: 4px; }
+  .fact p { margin: 0; color: var(--muted); font-size: 14px; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs id="wolf-defs">
+    <radialGradient id="w-fur" cx=".38" cy=".3" r=".8"><stop offset="0" style="stop-color:var(--w-light)"/><stop offset=".55" style="stop-color:var(--w-body)"/><stop offset="1" style="stop-color:var(--w-deep)"/></radialGradient>
+    <radialGradient id="w-head" cx=".42" cy=".28" r=".78"><stop offset="0" style="stop-color:var(--w-light)"/><stop offset=".6" style="stop-color:var(--w-body)"/><stop offset="1" style="stop-color:var(--w-deep)"/></radialGradient>
+    <radialGradient id="w-cream" cx=".45" cy=".3" r=".8"><stop offset=".55" style="stop-color:var(--w-cream)"/><stop offset="1" style="stop-color:var(--w-cream-deep)"/></radialGradient>
+    <radialGradient id="w-iris" cx=".5" cy=".75" r=".75"><stop offset="0" style="stop-color:var(--w-iris)"/><stop offset="1" style="stop-color:var(--w-iris-deep)"/></radialGradient>
+    <radialGradient id="w-shadow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+  </defs>
+</svg>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Mascot · wolf cub · preview</p>
+    <h1>Wolf cub animation sheet</h1>
+    <p class="lede">A four-legged grey wolf cub, drawn and animated entirely in code. Every leg is a two-segment limb solved with inverse kinematics, so paws plant on the ground and lift off like a real animal. Gaits follow real wolf locomotion: a four-beat walk, a diagonal trot and a bounding puppy gallop. Pick any animation to see it large.</p>
+  </header>
+
+  <div class="top">
+    <div class="card">
+      <svg id="stage" viewBox="0 0 480 250" role="img" aria-label="Wolf cub, large preview"></svg>
+      <div class="bar">
+        <div class="now"><h2 id="now-name">Idle</h2><p id="now-note"></p></div>
+        <div class="controls">
+          <div class="seg" role="group" aria-label="Playback speed">
+            <button type="button" data-speed="0.25" aria-pressed="false">¼×</button>
+            <button type="button" data-speed="0.5" aria-pressed="false">½×</button>
+            <button type="button" data-speed="1" aria-pressed="true">1×</button>
+          </div>
+          <label class="check"><input type="checkbox" id="bones"> Skeleton</label>
+          <label class="check"><input type="checkbox" id="pause"> Pause</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <section class="panel" aria-labelledby="size-h">
+        <h3 id="size-h">Actual size · 44px</h3>
+        <div class="sizes">
+          <figure class="size light"><div class="box"><svg id="mini-light" width="56" height="46" viewBox="-52 -96 104 98"></svg></div><figcaption>Light page</figcaption></figure>
+          <figure class="size dark"><div class="box"><svg id="mini-dark" width="56" height="46" viewBox="-52 -96 104 98"></svg></div><figcaption>Dark page</figcaption></figure>
+        </div>
+        <p class="note">It has to read as a wolf cub at this size: big head and ears, a fluffy tail with a dark tip, and four clear legs.</p>
+      </section>
+      <section class="panel" aria-labelledby="coat-h">
+        <h3 id="coat-h">Coat</h3>
+        <div class="swatches" id="coats">
+          <button type="button" class="swatch" data-coat="grey" aria-pressed="true"><span class="dots"><i style="background:#8f959e"></i><i style="background:#f2ede4"></i><i style="background:#3b3f46"></i></span><span>Grey wolf</span></button>
+          <button type="button" class="swatch" data-coat="arctic" aria-pressed="false"><span class="dots"><i style="background:#e9ecef"></i><i style="background:#ffffff"></i><i style="background:#b3bcc6"></i></span><span>Arctic wolf</span></button>
+          <button type="button" class="swatch" data-coat="timber" aria-pressed="false"><span class="dots"><i style="background:#9a7a5d"></i><i style="background:#f3e6d2"></i><i style="background:#3a2b21"></i></span><span>Timber wolf</span></button>
+        </div>
+      </section>
+      <section class="panel" aria-labelledby="theme-h">
+        <h3 id="theme-h">Page theme</h3>
+        <div class="seg" role="group" aria-label="Page theme">
+          <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
+          <button type="button" data-theme-btn="dark" aria-pressed="false">Dark</button>
+          <button type="button" data-theme-btn="auto" aria-pressed="true">Auto</button>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <section class="section" aria-labelledby="lib-h">
+    <h2 id="lib-h">Animation library</h2>
+    <p>Every animation the cub needs on the site, grouped by what it's for. Click one to play it large above.</p>
+    <div id="library" class="group"></div>
+  </section>
+
+  <section class="section" aria-labelledby="faces-h">
+    <h2 id="faces-h">Expressions</h2>
+    <p>Each expression is built from eyes, brows, mouth, ears and a small effect, and swaps instantly on top of any animation. Cubs have blue eyes until about eight weeks old, so this one keeps them.</p>
+    <div id="faces" class="faces"></div>
+  </section>
+
+  <section class="section" aria-labelledby="facts-h">
+    <h2 id="facts-h">What makes it read as a real wolf</h2>
+    <div class="facts">
+      <div class="fact"><b>Four-beat walk</b><p>Paws land one at a time in a lateral sequence: left hind, left front, right hind, right front. Each paw is on the ground about 60% of the stride.</p></div>
+      <div class="fact"><b>Diagonal trot</b><p>Wolves cover distance at a trot: diagonal pairs (left hind + right front) move together, with a brief moment of suspension.</p></div>
+      <div class="fact"><b>Bounding gallop</b><p>At full speed the body flexes and extends: hind paws land almost together, then the front pair, with all four off the ground in between.</p></div>
+      <div class="fact"><b>Legs that fold correctly</b><p>Front legs bend backward at the elbow, hind legs forward at the stifle, so sitting, lying and crouching fold the way a canine skeleton does.</p></div>
+      <div class="fact"><b>Ears and tail talk</b><p>Ears go forward when focused, flatten when unsure; the tail rises and wags when happy, drops when stalking and streams out when running.</p></div>
+      <div class="fact"><b>Cub behaviours</b><p>Play bow, mousing pounce, scratching with a hind leg, the full-body shake, a wobbly first howl and sleeping curled nose-to-tail.</p></div>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ============================================================================
+   Wolf cub: rig, poses, animations and renderer
+   Coordinates: the cub faces right, the origin is the ground under its body,
+   y points down (SVG). One unit ≈ one pixel at 1× scale; the cub is ~95 × 70.
+   ========================================================================== */
+const NS = 'http://www.w3.org/2000/svg'
+const TAU = Math.PI * 2
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+const lerp = (a, b, t) => a + (b - a) * t
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1)
+const ease = (t) => t * t * (3 - 2 * t)
+const easeOut = (t) => 1 - (1 - t) * (1 - t)
+const easeIn = (t) => t * t
+const blink = (t, off = 0) => ((t + off) % 3.9) < 0.12
+const pulse = (t, period, dur, off = 0) => { const p = (t + off) % period; return p < dur ? Math.sin(Math.PI * p / dur) : 0 }
+const deg = (r) => r * 180 / Math.PI
+
+/* ---------- Rig ---------- */
+const RIG = {
+  C: [0, -28],           // body centre (pitch pivot)
+  S: [15, -21],          // near shoulder
+  H: [-14, -22],         // near hip
+  FAR: [2.5, -1],        // far legs sit slightly forward and up (perspective)
+  N: [18, -33],          // neck pivot
+  T: [-23, -33],         // tail base
+  front: [11.5, 10.5],   // upper, lower length
+  hind: [12, 11],
+}
+
+/* Fur is shaded with soft gradients (defined once in #wolf-defs) for a rounded, plush look */
+const BODY = `
+  <path fill="url(#w-fur)" d="M-24,-26 L-28.5,-24.4 L-25,-22.6 L-27.6,-20 L-23.2,-19.6 Z"/>
+  <path fill="url(#w-fur)" d="M-25,-29 C-25.5,-38 -17,-43.5 -6,-43.5 C6,-43.5 18,-42 23,-35 C26.5,-30 25.5,-21 19,-17 C13,-13.5 4,-13.6 -4,-14 C-14,-14.6 -25,-19 -25,-29 Z"/>
+  <path fill="var(--w-shade)" opacity=".55" d="M-22,-36 C-17,-42.4 -6,-43.6 4,-43 C12,-42.6 18,-40.5 21,-37 C14,-38 4,-38.6 -6,-38.1 C-14,-37.7 -19,-36 -22,-36 Z"/>
+  <path fill="url(#w-cream)" d="M-15,-17.4 C-6,-21.6 8,-21.6 16,-18.4 C11,-14.4 3,-13.8 -4,-14.2 C-9,-14.5 -12.6,-15.6 -15,-17.4 Z"/>
+  <path fill="url(#w-cream)" d="M12.6,-37 C21,-38 27.4,-31 26.6,-22 L24.6,-16.8 L23.4,-20.2 L21.2,-15 L19.8,-19.2 L17.4,-14.4 L16,-18.8 L13.2,-15.6 L12.6,-19.4 C10.6,-25 10.4,-32 12.6,-37 Z"/>`
+
+const TAIL = `
+  <path fill="url(#w-fur)" d="M2,-1 C-4,-7 -15,-8.5 -22,-3 C-27.5,1.5 -30,8.5 -28,14 C-26.4,11.8 -24,10.4 -20.6,9.8 L-19,12.4 L-17.2,9.2 C-11,8 -5,5.8 -1,3 C1,2 2,1 2,-1 Z"/>
+  <path fill="var(--w-shade)" opacity=".5" d="M1,-2 C-5,-6.8 -14,-7.6 -20,-4.4 C-14,-4.6 -7,-3.4 -2,0 Z"/>
+  <path fill="var(--w-tip)" d="M-28,14 C-29.6,8.6 -27.2,2.6 -23.4,-0.6 C-22.4,3 -22.4,7 -20.6,9.8 C-24,10.4 -26.4,11.8 -28,14 Z"/>`
+
+/* Ears: grey outside, fluffy white tufts inside */
+const EAR = (fill) => `
+  <path fill="${fill}" d="M-6.5,2 C-6.6,-6 -3.6,-14.5 0,-20 C3.6,-14.5 6.6,-6 6.5,2 Z"/>
+  <path fill="var(--w-inner)" d="M-3.8,0.6 C-3.8,-4.6 -2,-10.4 0,-14.4 C2,-10.4 3.8,-4.6 3.8,0.6 Z"/>
+  <path fill="var(--w-cream)" d="M-3.6,1 L-2.4,-5 L-1,-1.6 L0,-8.6 L1.2,-2.2 L2.6,-6.2 L3.6,1 Z"/>`
+
+/* Head in three-quarter view, both eyes visible. Origin = neck pivot. */
+const HEAD = `
+  <path fill="url(#w-cream)" d="M-3,3 C1,9 18,9 22,3 Q24.6,6 23.4,8.4 Q21.4,8 20.6,9 Q20.6,11.8 18.8,12.2 Q17,10.6 15.6,11.6 Q15,14.4 12.6,14.4 Q11,12.2 9.5,13 Q8,12.2 6.4,14.4 Q4,14.4 3.4,11.6 Q2,10.6 0.2,12.2 Q-1.6,11.8 -1.6,9 Q-2.4,8 -4.4,8.4 Q-5.6,6 -3,3 Z"/>
+  <path fill="url(#w-head)" d="M-8,-13 C-8,-25 -1,-32.5 9.5,-32.5 C20,-32.5 27,-25 27,-13 C27,-8 28.6,-6 30.6,-4 L27.6,-3.4 C28.8,-2.2 29.2,-1 28.4,0 L25.8,0.4 C22,5.6 16,7.4 9.5,7.4 C3,7.4 -3,5.6 -6.8,0.4 L-9.4,0 C-10.2,-1 -9.8,-2.2 -8.6,-3.4 L-11.6,-4 C-9.6,-6 -8,-8 -8,-13 Z"/>
+  <path fill="var(--w-shade)" opacity=".35" d="M-1,-28 C3,-31.6 16,-31.6 20,-28 C15,-27.4 12,-26 9.5,-23.6 C7,-26 4,-27.4 -1,-28 Z"/>
+  <path fill="url(#w-cream)" d="M-7.6,-3.6 C-5.6,-9.6 0.4,-11 4.6,-8 C6.4,-10.2 7.8,-11.6 9.5,-11.6 C11.2,-11.6 12.6,-10.2 14.4,-8 C18.6,-11 24.6,-9.6 26.6,-3.6 C27.4,0 25.4,4.4 20.6,6.2 C15,7.9 4,7.9 -1.6,6.2 C-6.4,4.4 -8.4,0 -7.6,-3.6 Z"/>
+  <path fill="url(#w-cream)" d="M-5.6,-6 Q-9,-8.4 -10.8,-6.6 Q-8.6,-5.4 -9.4,-4 Q-12.4,-3.6 -12.2,-2.2 Q-9.6,-1.8 -9.2,-0.6 Q-11.4,1 -10.6,2.4 Q-7.8,2.2 -5.4,3 Z"/>
+  <path fill="url(#w-cream)" d="M24.6,-6 Q28,-8.4 29.8,-6.6 Q27.6,-5.4 28.4,-4 Q31.4,-3.6 31.2,-2.2 Q28.6,-1.8 28.2,-0.6 Q30.4,1 29.6,2.4 Q26.8,2.2 24.4,3 Z"/>
+  <ellipse fill="var(--w-cream)" cx="9.5" cy="-0.8" rx="7.4" ry="5.2"/>
+  <ellipse fill="var(--w-shade)" opacity=".18" cx="9.5" cy="2.6" rx="6" ry="2"/>
+  <ellipse class="blush" fill="var(--w-blush)" cx="-1.8" cy="-4.4" rx="3" ry="1.6"/>
+  <ellipse class="blush" fill="var(--w-blush)" cx="21.4" cy="-4.4" rx="3.2" ry="1.7"/>
+  <g class="mouth">
+    <g class="mouth-open"><ellipse fill="var(--w-mouth)" cx="9.5" cy="3.2" rx="3.8" ry="3.4"/><path class="tongue" fill="var(--w-tongue)" d="M6.6,3.6 C6.6,7.6 8,10.6 9.5,10.6 C11,10.6 12.4,7.6 12.4,3.6 C11.4,2.8 7.6,2.8 6.6,3.6 Z"/></g>
+    <path class="mouth-line" fill="none" stroke="var(--w-dark)" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round" d=""/>
+    <path class="blep" fill="var(--w-tongue)" d="M8.6,1.6 C8.6,3.8 9,4.6 9.9,4.6 C10.8,4.6 11.2,3.8 11.2,1.6 Z"/>
+  </g>
+  <path fill="var(--w-dark)" d="M5.4,-4.6 C5.4,-7.4 13.6,-7.4 13.6,-4.6 C13.6,-2.4 10.8,-0.6 9.5,-0.6 C8.2,-0.6 5.4,-2.4 5.4,-4.6 Z"/>
+  <ellipse fill="#ffffff" opacity=".6" cx="8" cy="-5.6" rx="1.7" ry=".75"/>
+  <ellipse fill="var(--w-cream)" cx="1.6" cy="-21.6" rx="2.9" ry="1.9" transform="rotate(-12,1.6,-21.6)"/>
+  <ellipse fill="var(--w-cream)" cx="17.6" cy="-21.6" rx="2.9" ry="1.9" transform="rotate(12,17.6,-21.6)"/>
+  <g class="eye"></g>
+  <g class="brow"></g>`
+
+/* Eyes: far eye (left, a little smaller) and near eye (right); big glossy irises with lashes */
+const EYE_POS = [[2, -13.6, 3.9, 4.6, -1], [17.4, -13.6, 4.4, 5, 1]]
+function eyeOne(type, cx, cy, rx, ry, side) {
+  const lash = `<path fill="none" stroke="var(--w-dark)" stroke-width=".8" stroke-linecap="round" d="M${cx + side * rx * 0.62},${cy - ry * 0.78} l${side * 1.6},-1.2 M${cx + side * rx * 0.9},${cy - ry * 0.38} l${side * 1.7},-0.4"/>`
+  const glossy = (scale = 1, pupil = 0.5) => `<ellipse fill="var(--w-dark)" cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}"/>` +
+    `<ellipse fill="url(#w-iris)" cx="${cx}" cy="${cy + 0.2}" rx="${rx * 0.82 * scale}" ry="${ry * 0.84 * scale}"/>` +
+    `<ellipse fill="var(--w-dark)" cx="${cx}" cy="${cy + 0.3}" rx="${rx * pupil}" ry="${ry * pupil * 1.05}"/>` +
+    `<circle fill="#fff" cx="${cx + rx * 0.3}" cy="${cy - ry * 0.38}" r="${rx * 0.34}"/><circle fill="#fff" opacity=".85" cx="${cx - rx * 0.32}" cy="${cy + ry * 0.34}" r="${rx * 0.14}"/>`
+  switch (type) {
+    case 'wide': return glossy(1.05, 0.32) + lash
+    case 'happy': return `<path fill="none" stroke="var(--w-dark)" stroke-width="1.5" stroke-linecap="round" d="M${cx - rx},${cy + 0.6} Q${cx},${cy - ry * 1.1} ${cx + rx},${cy + 0.6}"/>`
+    case 'closed': return `<path fill="none" stroke="var(--w-dark)" stroke-width="1.3" stroke-linecap="round" d="M${cx - rx},${cy - 0.4} Q${cx},${cy + ry * 0.7} ${cx + rx},${cy - 0.4}"/>` + lash.replace(/-1\.2|-0\.4/g, '0.6')
+    case 'half': return glossy() + `<path fill="url(#w-head)" d="M${cx - rx - 0.3},${cy - 0.4} C${cx - rx},${cy - ry * 1.5} ${cx + rx},${cy - ry * 1.5} ${cx + rx + 0.3},${cy - 0.4} Z"/><path fill="none" stroke="var(--w-dark)" stroke-width="1" stroke-linecap="round" d="M${cx - rx},${cy - 0.4} L${cx + rx},${cy - 0.4}"/>`
+    case 'squint': return `<g transform="translate(0,${cy * 0.35}) scale(1,0.65)">${glossy()}</g><path fill="none" stroke="var(--w-dark)" stroke-width="1" stroke-linecap="round" d="M${cx - rx},${cy - ry * 0.55} L${cx + rx},${cy - ry * 0.75}"/>`
+    case 'heart': return `<path transform="translate(${cx},${cy}) scale(${rx / 4})" fill="var(--heart)" d="M0,4.4 C-6,0.6 -5,-5 -2,-4.6 C-0.9,-4.4 0,-3.6 0,-2.6 C0,-3.6 0.9,-4.4 2,-4.6 C5,-5 6,0.6 0,4.4 Z"/>`
+    case 'dizzy': return `<path transform="translate(${cx},${cy}) scale(${rx / 4})" fill="none" stroke="var(--w-dark)" stroke-width="1" stroke-linecap="round" d="M0,0 m-.7,0 a.7,.7 0 1 1 1.4,0 a1.4,1.4 0 1 1 -2.8,0 a2.1,2.1 0 1 1 4.2,0 a2.8,2.8 0 1 1 -5.6,.2"/>`
+    case 'teary': return glossy() + lash + `<path fill="var(--tear)" d="M${cx + rx * 0.4},${cy + ry * 0.9} q1.6,2.6 0.2,3.4 q-1.4,-0.8 -0.2,-3.4 Z"/>`
+    case 'squeeze': return `<path fill="none" stroke="var(--w-dark)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" d="M${cx - side * rx},${cy - ry * 0.7} L${cx + side * rx * 0.6},${cy} L${cx - side * rx},${cy + ry * 0.7}"/>`
+    default: return glossy() + lash
+  }
+}
+const EYES = new Proxy({}, { get: (_, type) => EYE_POS.map((e) => eyeOne(type, ...e)).join('') })
+const BROWS = {
+  none: '',
+  up: `<path fill="none" stroke="var(--w-shade)" stroke-width="1.1" stroke-linecap="round" d="M-0.8,-25.4 Q1.6,-27 4.2,-25.8 M15,-25.8 Q17.6,-27 20.2,-25.4"/>`,
+  worry: `<path fill="none" stroke="var(--w-shade)" stroke-width="1.1" stroke-linecap="round" d="M-0.8,-23.8 Q1.6,-24.2 4,-25.8 M15.2,-25.8 Q17.6,-24.2 20.2,-23.8"/>`,
+  det: `<path fill="none" stroke="var(--w-shade)" stroke-width="1.2" stroke-linecap="round" d="M-0.8,-26 Q1.6,-25.2 4.4,-23.6 M14.8,-23.6 Q17.6,-25.2 20.2,-26"/>`,
+}
+const MOUTH_LINES = {
+  smile: 'M9.5,-0.6 L9.5,1 M6.6,1.2 C7.8,2.6 9,2.4 9.5,1 C10,2.4 11.2,2.6 12.4,1.2',
+  flat: 'M9.5,-0.6 L9.5,1.2 M7.2,1.8 L11.8,1.8',
+  frown: 'M9.5,-0.6 L9.5,1.2 M7,2.8 C8,1.6 9,1.4 9.5,1.8 C10,1.4 11,1.6 12,2.8',
+}
+
+/* Mouth presets: [jaw angle, tongue, line, blep] */
+const MOUTHS = {
+  closed: [0, 0, 'smile', 0], flat: [0, 0, 'flat', 0], frown: [0, 0, 'frown', 0], blep: [0, 0, 'smile', 1],
+  pant: [11, 1, null, 0], open: [17, 0, null, 0], howl: [23, 0, null, 0], yawn: [33, 1, null, 0], snap: [26, 0, null, 0],
+}
+
+/* Expressions (also used for the face grid) */
+const EXPRESSIONS = [
+  ['Neutral', { eyes: 'open', mouth: 'closed' }],
+  ['Happy', { eyes: 'happy', mouth: 'closed', blush: 0.6 }],
+  ['Excited', { eyes: 'happy', mouth: 'pant', earN: 6 }],
+  ['Curious', { eyes: 'wide', mouth: 'flat', earN: -12, earF: 10, emote: '?' }],
+  ['Alert', { eyes: 'wide', mouth: 'flat', earN: 12, earF: 12 }],
+  ['Focused', { eyes: 'squint', brows: 'det', mouth: 'flat', earN: 14, earF: 14 }],
+  ['Surprised', { eyes: 'wide', brows: 'up', mouth: 'open', earN: 10, emote: '!' }],
+  ['Sleepy', { eyes: 'half', mouth: 'flat', earN: -8 }],
+  ['Asleep', { eyes: 'closed', mouth: 'closed', earN: -14, emote: 'z' }],
+  ['Sad', { eyes: 'teary', brows: 'worry', mouth: 'frown', earN: -26, earF: -22 }],
+  ['Sheepish', { eyes: 'happy', brows: 'worry', mouth: 'flat', earN: -22, earF: -18, blush: 1, emote: 'sweat' }],
+  ['Grumpy', { eyes: 'squint', brows: 'det', mouth: 'frown', earN: -20, earF: -16 }],
+  ['Love', { eyes: 'heart', mouth: 'closed', blush: 1, emote: 'heart' }],
+  ['Dizzy', { eyes: 'dizzy', mouth: 'flat', earN: -10, earF: 8, emote: 'stars' }],
+  ['Ouch', { eyes: 'squeeze', brows: 'worry', mouth: 'flat', earN: -24, earF: -20 }],
+  ['Yawn', { eyes: 'closed', mouth: 'yawn', earN: -6 }],
+  ['Howl', { eyes: 'closed', mouth: 'howl', earN: -12, headA: -40 }],
+  ['Blep', { eyes: 'open', mouth: 'blep', earN: 4 }],
+]
+
+/* ---------- Pose ---------- */
+function base(t, extra) {
+  return Object.assign({
+    x: 0, y: 0, sx: 1, sy: 1, alpha: 1, bodyY: 0, pitch: 0,
+    nf: [1, 0], ff: [1, 0], nh: [-1, 0], fh: [-1, 0],
+    headA: 0, headX: 0, headY: 0, earN: 0, earF: 0,
+    tailA: 6, tailW: 1, tailFlip: false, tailFront: false,
+    eyes: blink(t) ? 'closed' : 'open', brows: 'none', mouth: 'closed', jaw: null, tongue: null, blush: 0,
+    fx: [], emote: null, platform: null, speed: 0,
+  }, extra)
+}
+/* One paw's offset along a gait cycle: on the ground (stance) it slides back under the body,
+   in the air (swing) it lifts in an arc and reaches forward. */
+function gait(ph, off, duty, stride, lift) {
+  const p = ((ph - off) % 1 + 1) % 1
+  if (p < duty) return [stride / 2 - stride * (p / duty), 0]
+  const u = (p - duty) / (1 - duty)
+  return [-stride / 2 + stride * ease(u), -lift * Math.sin(Math.PI * u)]
+}
+const add = (a, b) => [a[0] + b[0], a[1] + b[1]]
+const SIT = { pitch: -32, bodyY: 7, nf: [0.5, 0], ff: [1, 0], nh: [11, 0], fh: [10, 0], tailA: 22 }
+const LIE = { bodyY: 12, nf: [13, 0], ff: [11, 0], nh: [9, 0], fh: [8, 0], headY: 3, tailA: -16 }
+
+/* ---------- Animations ---------- */
+const ANIMS = {
+  idle: {
+    name: 'Idle', group: 'Everyday', note: 'Breathing, an ear flick now and then, the tail swaying low.',
+    fn(t) {
+      const b = Math.sin(TAU * t / 3.2)
+      return base(t, { bodyY: b * 0.35, sy: 1 + b * 0.012, headA: Math.sin(t * 0.9) * 2.5, headY: b * 0.3,
+        earF: -18 * pulse(t, 4.3, 0.28), earN: -14 * pulse(t, 6.1, 0.24, 2), tailA: 6 + Math.sin(t * 1.4) * 3 })
+    },
+  },
+  walk: {
+    name: 'Walk', group: 'Getting around', note: 'Four-beat lateral walk: left hind, left front, right hind, right front.',
+    fn(t) {
+      const P = 1.05, ph = t / P, d = 0.62, s = 13, l = 4.5
+      return base(t, {
+        nh: add([-1, 0], gait(ph, 0, d, s, l)), nf: add([1, 0], gait(ph, 0.25, d, s, l)),
+        fh: add([-1, 0], gait(ph, 0.5, d, s, l)), ff: add([1, 0], gait(ph, 0.75, d, s, l)),
+        bodyY: -0.6 * Math.cos(TAU * 2 * ph), pitch: Math.sin(TAU * 2 * ph) * 0.8, headA: Math.sin(TAU * 2 * ph + 0.6) * 2.4,
+        tailA: 4 + Math.sin(TAU * ph) * 6, earN: 3, earF: 3, speed: s / (d * P),
+      })
+    },
+  },
+  trot: {
+    name: 'Trot', group: 'Getting around', note: 'Diagonal pairs move together, with a short float between steps.',
+    fn(t) {
+      const P = 0.56, ph = t / P, d = 0.44, s = 18, l = 6.5
+      return base(t, {
+        nh: add([-1, 0], gait(ph, 0, d, s, l)), ff: add([1, 0], gait(ph, 0, d, s, l)),
+        fh: add([-1, 0], gait(ph, 0.5, d, s, l)), nf: add([1, 0], gait(ph, 0.5, d, s, l)),
+        bodyY: 0.9 * Math.cos(TAU * 2 * ph), headA: 4 + Math.sin(TAU * 2 * ph) * 1.5, headX: 1,
+        tailA: 0 + Math.sin(TAU * 2 * ph) * 4, earN: -6, earF: -6, speed: s / (d * P),
+      })
+    },
+  },
+  gallop: {
+    name: 'Gallop', group: 'Getting around', note: 'Bounding puppy run: hind pair, front pair, then all four in the air.',
+    fn(t) {
+      const P = 0.46, ph = t / P, d = 0.32, s = 24, l = 9
+      const flex = Math.sin(TAU * ph + 1.3)
+      return base(t, {
+        nh: add([-2, 0], gait(ph, 0, d, s, l)), fh: add([-2, 0], gait(ph, 0.07, d, s, l)),
+        nf: add([2, 0], gait(ph, 0.46, d, s, l)), ff: add([2, 0], gait(ph, 0.53, d, s, l)),
+        pitch: flex * 7, sx: 1 + flex * 0.035, y: -4.5 * Math.max(0, Math.sin(TAU * (ph - 0.24))),
+        headA: 6 - flex * 4, headX: 2, earN: -18, earF: -16, tailA: -4 + Math.sin(TAU * ph) * 7,
+        mouth: 'pant', eyes: 'open', speed: s / (d * P),
+      })
+    },
+  },
+  stalk: {
+    name: 'Stalk', group: 'Getting around', note: 'Low and slow, ears pinned forward, freezing mid-step with a paw raised.',
+    fn(t) {
+      const cyc = t % 3.4, moving = cyc < 2.4, P = 1.7
+      const local = Math.floor(t / 3.4) * 2.4 + Math.min(cyc, 2.4)
+      const ph = local / P, d = 0.7, s = 9, l = 3
+      const legs = {
+        nh: add([-1, 0], gait(ph, 0, d, s, l)), nf: add([1, 0], gait(ph, 0.25, d, s, l)),
+        fh: add([-1, 0], gait(ph, 0.5, d, s, l)), ff: add([1, 0], gait(ph, 0.75, d, s, l)),
+      }
+      if (!moving) legs.nf = [3, -5 - Math.sin((cyc - 2.4) * 3) * 0.6]
+      return base(t, Object.assign(legs, {
+        bodyY: 5, pitch: 3, headA: 10, headX: 3, headY: 3, earN: 14, earF: 14, tailA: -18 + Math.sin(t * 7) * (moving ? 0 : 3),
+        eyes: 'squint', brows: 'det', mouth: 'flat', speed: moving ? s / (d * P) : 0,
+      }))
+    },
+  },
+  sniff: {
+    name: 'Sniff around', group: 'Getting around', note: 'Nose to the ground, quick sniffs, slow wandering steps.',
+    fn(t) {
+      const cyc = t % 3, moving = cyc < 1.8, P = 1.4
+      const local = Math.floor(t / 3) * 1.8 + Math.min(cyc, 1.8)
+      const ph = local / P, d = 0.65, s = 8, l = 3
+      const sniffing = !moving ? Math.sin(t * 30) * 1.4 : 0
+      return base(t, {
+        nh: add([-1, 0], gait(ph, 0, d, s, l)), nf: add([1, 0], gait(ph, 0.25, d, s, l)),
+        fh: add([-1, 0], gait(ph, 0.5, d, s, l)), ff: add([1, 0], gait(ph, 0.75, d, s, l)),
+        bodyY: 2, pitch: 5, headA: 36 + sniffing, headX: 3, headY: 6, earN: 8, earF: 8, tailA: 6 + Math.sin(t * 4) * 5,
+        mouth: 'closed', speed: moving ? s / (d * P) : 0, fx: !moving && (t * 4 % 1) < 0.5 ? [{ k: 'sniff', p: (t * 4) % 1 }] : [],
+      })
+    },
+  },
+  sit: {
+    name: 'Sit', group: 'Everyday', note: 'Haunches down, front legs straight, tail resting on the ground.',
+    fn(t) {
+      const b = Math.sin(TAU * t / 3.4), look = pulse(t, 5.2, 1.8, 1)
+      return base(t, Object.assign({}, SIT, { bodyY: SIT.bodyY + b * 0.3, headA: -6 + look * -8, earN: look * 8, earF: -16 * pulse(t, 4.7, 0.3), tailA: 22 + Math.sin(t * 1.1) * 2 }))
+    },
+  },
+  lie: {
+    name: 'Lie down', group: 'Everyday', note: 'Sphinx position, front paws out, watching, the tail giving a thump.',
+    fn(t) {
+      const b = Math.sin(TAU * t / 3.6)
+      return base(t, Object.assign({}, LIE, { bodyY: LIE.bodyY + b * 0.3, headA: Math.sin(t * 0.7) * 6, earN: Math.sin(t * 0.7 + 1) * 6,
+        tailA: -16 + 10 * pulse(t, 3.3, 0.35) }))
+    },
+  },
+  sleep: {
+    name: 'Sleep', group: 'Everyday', note: 'Curled up with its tail wrapped round, slow breathing, z’s floating up.',
+    fn(t) {
+      const b = Math.sin(TAU * t / 4.2)
+      return base(t, { bodyY: 13 + b * 0.5, pitch: 3, sx: 1.04, sy: 0.93 + b * 0.015, nf: [10, 0], ff: [8, 0], nh: [8, 0], fh: [7, 0],
+        headA: 33, headX: -7, headY: 10, eyes: 'closed', earN: -22, earF: -20, tailFront: true, tailFlip: true, tailA: 12,
+        mouth: 'closed', emote: 'z' })
+    },
+  },
+  stretch: {
+    name: 'Wake & stretch', group: 'Everyday', note: 'Front stretch with a big yawn, then a back stretch.',
+    fn(t) {
+      const T = 3.4, c = t % T
+      const front = ease(seg(c, 0, 0.5)) * (1 - ease(seg(c, 1.4, 1.8)))
+      const back = ease(seg(c, 1.9, 2.3)) * (1 - ease(seg(c, 2.7, 3.1)))
+      const yawn = Math.sin(Math.PI * seg(c, 0.4, 1.4))
+      return base(t, {
+        pitch: front * 18 - back * 9, bodyY: front * 4 + back * 2,
+        nf: [1 + front * 14, 0], ff: [1 + front * 12, 0], nh: [-1 - back * 10, 0], fh: [-1 - back * 8, 0],
+        headA: -front * 14 - back * 4, jaw: yawn * 32, tongue: yawn, eyes: front > 0.2 ? 'closed' : blink(t) ? 'closed' : 'open',
+        mouth: yawn > 0.15 ? 'yawn' : 'closed', earN: -front * 10, earF: -front * 10, tailA: 6 + front * 18 + back * 10,
+      })
+    },
+  },
+  playbow: {
+    name: 'Play bow', group: 'Playful', note: 'Front down, rear up, tail wagging: the universal “let’s play”.',
+    fn(t) {
+      const bounce = Math.max(0, Math.sin(t * 6)) * pulse(t, 2.4, 1.1)
+      return base(t, {
+        pitch: 18, bodyY: 4 - bounce * 2, nf: [10, 0], ff: [9, 0], nh: [-1, 0], fh: [-1, 0],
+        headA: -24, headY: -bounce, eyes: 'happy', mouth: 'pant', earN: 6, earF: 6,
+        tailA: 38 + Math.sin(t * 17) * 13, tailW: 0.78 + 0.22 * Math.abs(Math.cos(t * 17)),
+      })
+    },
+  },
+  wag: {
+    name: 'Happy wag', group: 'Playful', note: 'Fast wag, panting, whole body wiggling with it.',
+    fn(t) {
+      const w = Math.sin(t * 17)
+      return base(t, { pitch: Math.sin(t * 8.5) * 1.6, bodyY: Math.abs(Math.sin(t * 8.5)) * -0.5, headA: -6 + Math.sin(t * 8.5 + 1) * 2,
+        eyes: 'happy', mouth: 'pant', earN: -8, earF: -8, blush: 0.5, tailA: 30 + w * 15, tailW: 0.75 + 0.25 * Math.abs(Math.cos(t * 17)) })
+    },
+  },
+  pounce: {
+    name: 'Mousing pounce', group: 'Playful', note: 'Crouch and wiggle, a high arcing leap, nose-first into the ground, pop back out.',
+    fn(t) {
+      const T = 2.7, c = t % T
+      if (c < 0.9) {
+        const w = Math.abs(Math.sin(c * 20))
+        return base(t, { x: -14, bodyY: 5 + w * 0.6, pitch: 4, nf: [3, 0], ff: [3, 0], nh: [-2, 0], fh: [-2, 0], headA: 12, headX: 2,
+          earN: 15, earF: 15, eyes: 'wide', brows: 'det', mouth: 'flat', tailA: -12 + Math.sin(c * 26) * 4, alpha: Math.min(1, c / 0.15) })
+      }
+      if (c < 1.5) {
+        const u = (c - 0.9) / 0.6
+        return base(t, { x: -14 + 32 * u, y: -38 * Math.sin(Math.PI * u), pitch: lerp(-28, 38, ease(u)), nf: [10, -2], ff: [9, -1], nh: [-11, -4], fh: [-10, -3],
+          headA: lerp(-10, 22, u), earN: 16, earF: 16, eyes: 'wide', mouth: 'flat', tailA: lerp(-10, 30, u) })
+      }
+      if (c < 1.9) {
+        const u = (c - 1.5) / 0.4
+        return base(t, { x: 18, pitch: 38, bodyY: 8, sy: 1 - 0.06 * Math.sin(Math.PI * u), nf: [4, 0], ff: [3, 0], nh: [-1, 0], fh: [-1, 0],
+          headA: 25, eyes: 'closed', earN: 10, earF: 10, tailA: 34 + Math.sin(c * 30) * 8, fx: [{ k: 'dust', x: 34, p: u }, { k: 'dust', x: 28, p: u * 0.8 }] })
+      }
+      const u = ease(seg(c, 1.9, 2.25))
+      return base(t, { x: 18, pitch: lerp(38, 0, u), bodyY: lerp(8, 0, u), headA: lerp(25, 0, u) + Math.sin(c * 34) * 8 * (1 - seg(c, 2.25, 2.5)),
+        eyes: 'happy', mouth: 'pant', earN: -6, tailA: 28 + Math.sin(c * 17) * 12, alpha: 1 - seg(c, 2.5, 2.7) })
+    },
+  },
+  tilt: {
+    name: 'Head tilt', group: 'Reactions', note: 'Something curious: ears go opposite ways and the head tips.',
+    fn(t) {
+      const k = ease(seg(t % 3.2, 0.4, 0.8)) * (1 - ease(seg(t % 3.2, 2.2, 2.6)))
+      return base(t, { headA: -12 * k, headY: -1.2 * k, headX: -1 * k, earN: -16 * k, earF: 12 * k, eyes: k > 0.5 ? 'wide' : blink(t) ? 'closed' : 'open',
+        mouth: 'flat', emote: k > 0.6 ? '?' : null, tailA: 8 })
+    },
+  },
+  snap: {
+    name: 'Snap & miss', group: 'Reactions', note: 'Chasing the cursor: lunges, snaps its jaws on thin air, looks baffled.',
+    fn(t) {
+      const T = 2.8, c = t % T
+      const lunge = ease(seg(c, 0.5, 0.72)) * (1 - ease(seg(c, 0.9, 1.4)))
+      const open = c > 0.5 && c < 0.76 ? 1 : 0
+      const baffled = c > 0.9 && c < 2.4
+      return base(t, {
+        x: lunge * 10, bodyY: c < 0.5 ? 2 : 0, pitch: -lunge * 6, nf: [1 + lunge * 6, -lunge * 3], ff: [1 + lunge * 5, 0], nh: [-1 - lunge * 3, 0], fh: [-1 - lunge * 3, 0],
+        headA: c < 0.9 ? -12 - lunge * 8 : -4, headX: lunge * 5,
+        mouth: open ? 'snap' : 'closed', eyes: c < 0.9 ? 'wide' : baffled ? 'open' : blink(t) ? 'closed' : 'open', brows: c < 0.9 ? 'det' : 'up',
+        earN: c < 0.9 ? 14 : -12, earF: c < 0.9 ? 14 : 8,
+        emote: baffled && c > 1.1 ? '?' : null, fx: c > 0.74 && c < 0.95 ? [{ k: 'snap', p: seg(c, 0.74, 0.95) }] : [], tailA: 10,
+      })
+    },
+  },
+  scratch: {
+    name: 'Scratch', group: 'Reactions', note: 'Sits and scratches behind the ear with a hind paw, eyes half shut in bliss.',
+    fn(t) {
+      const c = t % 2.6, on = ease(seg(c, 0, 0.3)) * (1 - ease(seg(c, 1.9, 2.2)))
+      const sc = Math.sin(t * 24)
+      const legRest = [11, 0], legUp = [17 + sc * 1.6, -24 + Math.cos(t * 24) * 1.4]
+      return base(t, Object.assign({}, SIT, { nh: [lerp(legRest[0], legUp[0], on), lerp(legRest[1], legUp[1], on)], headA: 16 * on - 6 * (1 - on), headX: -2 * on, headY: 2 * on,
+        eyes: on > 0.5 ? 'happy' : 'open', mouth: on > 0.5 ? 'blep' : 'closed', earN: -14 * on + sc * 3 * on, pitch: SIT.pitch + 3 * on }))
+    },
+  },
+  shake: {
+    name: 'Shake off', group: 'Reactions', note: 'A full-body shake, nose to tail, ears flapping.',
+    fn(t) {
+      const c = t % 2.6, k = Math.sin(Math.PI * seg(c, 0.3, 1.5)), w = Math.sin(t * 42)
+      return base(t, { nf: [3, 0], ff: [3, 0], nh: [-3, 0], fh: [-3, 0], pitch: w * 2.4 * k, sx: 1 + w * 0.05 * k, headA: Math.sin(t * 42 + 1.1) * 12 * k,
+        earN: Math.sin(t * 42 + 2) * 26 * k, earF: Math.sin(t * 42 + 2.6) * 26 * k, tailA: 10 + w * 22 * k,
+        eyes: k > 0.1 ? 'closed' : blink(t) ? 'closed' : 'open', mouth: k > 0.1 ? 'flat' : 'closed', fx: k > 0.2 ? [{ k: 'shake', p: (t * 6) % 1 }] : [] })
+    },
+  },
+  howl: {
+    name: 'Howl', group: 'Reactions', note: 'A cub’s wobbly first howl: head up, mouth round, ears back.',
+    fn(t) {
+      const c = t % 3.6, k = ease(seg(c, 0, 0.5)) * (1 - ease(seg(c, 2.6, 3.1)))
+      return base(t, Object.assign({}, SIT, { headA: lerp(-6, -56, k) + Math.sin(c * 3) * 3 * k, headY: -2 * k,
+        jaw: (21 + Math.sin(c * 9) * 3) * k, mouth: k > 0.2 ? 'howl' : 'closed', eyes: k > 0.3 ? 'closed' : 'open', earN: 10 * k, earF: 10 * k,
+        fx: k > 0.6 ? [{ k: 'howl', p: (c * 1.4) % 1 }] : [] }))
+    },
+  },
+  pant: {
+    name: 'Pant', group: 'Reactions', note: 'Hot or excited: mouth open, tongue out, quick breaths.',
+    fn(t) {
+      const b = Math.sin(TAU * t / 0.42)
+      return base(t, { bodyY: b * 0.45, sy: 1 + b * 0.015, headY: b * 0.4, mouth: 'pant', jaw: 10 + b * 2, eyes: blink(t) ? 'closed' : 'open', tailA: 10 + Math.sin(t * 2) * 4 })
+    },
+  },
+  jump: {
+    name: 'Jump up', group: 'Parkour', note: 'Gathers, springs, reaches with the front paws and lands on the ledge.',
+    fn(t) {
+      const T = 2.9, c = t % T, plat = { x0: 16, x1: 82, y: -26 }
+      const alpha = Math.min(1, c / 0.15) * (1 - seg(c, 2.6, 2.9))
+      if (c < 0.62) {
+        const g = ease(seg(c, 0.38, 0.62))
+        return base(t, { x: -34, bodyY: g * 4, pitch: -g * 6, nf: [1, 0], ff: [1, 0], nh: [-1 - g * 2, 0], fh: [-1 - g * 2, 0], headA: -12, earN: 12, earF: 12,
+          eyes: 'wide', platform: plat, alpha })
+      }
+      if (c < 1.08) {
+        const u = (c - 0.62) / 0.46
+        return base(t, { x: lerp(-34, 40, u), y: lerp(0, -26, u) - 20 * Math.sin(Math.PI * u), pitch: lerp(-22, 8, u),
+          nf: [lerp(8, 3, u), lerp(-6, -1, u)], ff: [lerp(7, 3, u), lerp(-5, -1, u)], nh: [-9, -3], fh: [-8, -2], headA: -8, earN: -8, earF: -8,
+          eyes: 'wide', tailA: 18, platform: plat })
+      }
+      const l = seg(c, 1.08, 1.32), sq = Math.sin(Math.PI * l) * (1 - l)
+      return base(t, { x: 40, y: -26, sy: 1 - 0.14 * sq, sx: 1 + 0.08 * sq, bodyY: 3 * sq, eyes: 'happy', mouth: 'pant', tailA: 26 + Math.sin(c * 17) * 12,
+        platform: plat, alpha, fx: l < 1 ? [{ k: 'dust', x: 40, y: -26, p: l }] : [] })
+    },
+  },
+  fall: {
+    name: 'Fall & land', group: 'Parkour', note: 'Legs splay, ears fly up, a hard landing, a dizzy moment, then a shake.',
+    fn(t) {
+      const T = 2.9, c = t % T
+      if (c < 0.75) {
+        const u = c / 0.75
+        return base(t, { y: -72 + 72 * easeIn(u), nf: [6, -4], ff: [4, -3], nh: [-7, -4], fh: [-5, -3], earN: -30 + Math.sin(c * 30) * 8, earF: -26,
+          eyes: 'wide', brows: 'up', mouth: 'open', tailA: 34 + Math.sin(c * 24) * 6, alpha: Math.min(1, c / 0.12) })
+      }
+      const l = seg(c, 0.75, 1.0), sq = Math.sin(Math.PI * l)
+      if (c < 1.0) return base(t, { sy: 1 - 0.2 * sq, sx: 1 + 0.12 * sq, bodyY: 6 * sq, nf: [4, 0], ff: [4, 0], nh: [-4, 0], fh: [-4, 0], eyes: 'squeeze', brows: 'worry', mouth: 'flat',
+        earN: -28, earF: -24, tailA: -10, fx: [{ k: 'dust', x: 0, p: l, big: 1 }] })
+      if (c < 1.8) return base(t, { pitch: Math.sin(c * 6) * 2, headA: Math.sin(c * 5) * 6, eyes: 'dizzy', mouth: 'flat', earN: -10, earF: 8, emote: 'stars', tailA: -6,
+        fx: [{ k: 'dust', x: 0, p: Math.min(1, l + seg(c, 1.0, 1.3)), big: 1 }] })
+      const k = Math.sin(Math.PI * seg(c, 1.8, 2.4))
+      return base(t, { headA: Math.sin(c * 40) * 14 * k, earN: Math.sin(c * 40 + 2) * 24 * k, earF: Math.sin(c * 40 + 2.5) * 24 * k,
+        eyes: k > 0.1 ? 'closed' : 'open', brows: k > 0.1 ? 'none' : 'det', tailA: 8, alpha: 1 - seg(c, 2.6, 2.9) })
+    },
+  },
+  ledge: {
+    name: 'Scramble up', group: 'Parkour', note: 'Jumps a bit short, hooks the edge with its front paws, hind legs scrabbling, hauls itself up.',
+    fn(t) {
+      const T = 3.6, c = t % T, plat = { x0: 12, x1: 80, y: -30 }
+      const alpha = Math.min(1, c / 0.15) * (1 - seg(c, 3.3, 3.6))
+      if (c < 0.3) return base(t, { x: -18, bodyY: ease(seg(c, 0, 0.3)) * 4, headA: -14, earN: 12, earF: 12, eyes: 'wide', platform: plat, alpha })
+      if (c < 0.7) {
+        const u = (c - 0.3) / 0.4
+        return base(t, { x: lerp(-18, 2, u), y: lerp(0, -6, u) - 14 * Math.sin(Math.PI * u), pitch: lerp(0, -42, u), nf: [8, -4], ff: [7, -4], nh: [-6, 0], fh: [-6, 0],
+          headA: -10, eyes: 'wide', earN: 10, platform: plat })
+      }
+      if (c < 1.9) {
+        const s = Math.sin(c * 20), s2 = Math.sin(c * 20 + Math.PI)
+        return base(t, { x: 2, y: -6, pitch: -42, nf: { abs: [20, -30] }, ff: { abs: [23, -30] }, nh: { abs: [10.5, -11 + s * 5] }, fh: { abs: [10.5, -11 + s2 * 5] },
+          headA: 20, headX: 1, eyes: 'squeeze', brows: 'det', mouth: 'flat', earN: -8, earF: -8, tailA: 10 + s * 10, platform: plat,
+          fx: [{ k: 'scrabble', p: (c * 5) % 1 }] })
+      }
+      if (c < 2.5) {
+        const u = ease(seg(c, 1.9, 2.5))
+        return base(t, { x: lerp(2, 22, u), y: lerp(-6, -30, u), pitch: lerp(-42, 0, u),
+          nf: { abs: [lerp(20, 39, u), -30] }, ff: { abs: [lerp(23, 39, u), -30] }, nh: { abs: [lerp(10.5, 7, u), lerp(-11, -30, u)] }, fh: { abs: [lerp(10.5, 7, u), lerp(-11, -30, u)] },
+          headA: lerp(20, 0, u), eyes: 'squeeze', earN: -6, platform: plat })
+      }
+      return base(t, { x: 22, y: -30, eyes: 'happy', mouth: 'pant', tailA: 28 + Math.sin(c * 17) * 12, platform: plat, alpha })
+    },
+  },
+}
+
+/* ---------- Geometry: pose → solved skeleton ---------- */
+function rotAbout(p, c, a) {
+  const r = a * Math.PI / 180, cs = Math.cos(r), sn = Math.sin(r), dx = p[0] - c[0], dy = p[1] - c[1]
+  return [c[0] + dx * cs - dy * sn, c[1] + dx * sn + dy * cs]
+}
+function ik(a, target, L1, L2, bend) {
+  let vx = target[0] - a[0], vy = target[1] - a[1]
+  let d = Math.hypot(vx, vy)
+  const dMax = L1 + L2 - 0.01, dMin = Math.abs(L1 - L2) + 0.5
+  const dc = clamp(d, dMin, dMax)
+  if (d < 1e-6) { vx = 0; vy = 1; d = 1 }
+  const ux = vx / d, uy = vy / d
+  const baseA = Math.atan2(uy, ux)
+  const cosA = clamp((L1 * L1 + dc * dc - L2 * L2) / (2 * L1 * dc), -1, 1)
+  const ja = baseA + bend * Math.acos(cosA)
+  const j = [a[0] + Math.cos(ja) * L1, a[1] + Math.sin(ja) * L1]
+  const p = [a[0] + ux * dc, a[1] + uy * dc]
+  return { a, j, p }
+}
+function solve(pose) {
+  const body = (p) => { const q = rotAbout(p, RIG.C, pose.pitch); return [q[0], q[1] + pose.bodyY] }
+  const S = body(RIG.S), H = body(RIG.H)
+  const Sf = body(add(RIG.S, RIG.FAR)), Hf = body(add(RIG.H, RIG.FAR))
+  const target = (spec, anchor) => spec.abs
+    ? [(spec.abs[0] - pose.x) / pose.sx, (spec.abs[1] - pose.y) / pose.sy]
+    : [anchor[0] + spec[0], spec[1]]
+  const legs = {
+    ff: ik(Sf, target(pose.ff, Sf), ...RIG.front, 1),
+    fh: ik(Hf, target(pose.fh, Hf), ...RIG.hind, -1),
+    nf: ik(S, target(pose.nf, S), ...RIG.front, 1),
+    nh: ik(H, target(pose.nh, H), ...RIG.hind, -1),
+  }
+  const m = MOUTHS[pose.mouth] || MOUTHS.closed
+  return {
+    x: pose.x, y: pose.y, sx: pose.sx, sy: pose.sy, alpha: pose.alpha, bodyY: pose.bodyY, pitch: pose.pitch, legs,
+    N: body(RIG.N), T: body(RIG.T), headRot: pose.pitch * 0.35 + pose.headA, headX: pose.headX, headY: pose.headY,
+    earN: pose.earN, earF: pose.earF, tailRot: pose.tailA + pose.pitch, tailW: pose.tailW,
+    jaw: pose.jaw != null ? pose.jaw : m[0], tongue: pose.tongue != null ? pose.tongue : m[1], blush: pose.blush,
+    // discrete
+    eyes: pose.eyes, brows: pose.brows, line: m[2], blep: m[3], tailFlip: pose.tailFlip, tailFront: pose.tailFront,
+    fx: pose.fx, emote: pose.emote, platform: pose.platform, speed: pose.speed,
+  }
+}
+/* Blend two solved skeletons (used when switching animations on the big stage) */
+function mixGeo(a, b, k) {
+  const out = Object.assign({}, k < 0.5 ? a : b)
+  for (const key of ['x', 'y', 'sx', 'sy', 'alpha', 'bodyY', 'pitch', 'headRot', 'headX', 'headY', 'earN', 'earF', 'tailRot', 'tailW', 'jaw', 'tongue', 'blush']) out[key] = lerp(a[key], b[key], k)
+  for (const key of ['N', 'T']) out[key] = [lerp(a[key][0], b[key][0], k), lerp(a[key][1], b[key][1], k)]
+  out.legs = {}
+  for (const l of ['ff', 'fh', 'nf', 'nh']) {
+    out.legs[l] = {}
+    for (const p of ['a', 'j', 'p']) out.legs[l][p] = [lerp(a.legs[l][p][0], b.legs[l][p][0], k), lerp(a.legs[l][p][1], b.legs[l][p][1], k)]
+  }
+  out.fx = b.fx; out.emote = b.emote; out.platform = b.platform; out.speed = b.speed
+  return out
+}
+
+/* ---------- Renderer ---------- */
+const el = (tag, attrs, parent) => { const n = document.createElementNS(NS, tag); for (const k in attrs) n.setAttribute(k, attrs[k]); if (parent) parent.appendChild(n); return n }
+function legMarkup(far, hind) {
+  const fill = far ? 'var(--w-deep)' : 'url(#w-fur)', line = far ? 'var(--w-deep)' : 'var(--w-body)', low = far ? 'var(--w-deep)' : 'var(--w-leg)'
+  return `<line class="u" stroke="${line}" stroke-width="${hind ? 9.5 : 8.6}" stroke-linecap="round"/>
+    <line class="l" stroke="${low}" stroke-width="${hind ? 7.4 : 7.2}" stroke-linecap="round"/>
+    <g class="paw"><ellipse fill="${low}" rx="5.2" ry="3.3"/>${far ? '' : '<path fill="none" stroke="var(--w-deep)" stroke-width=".7" stroke-linecap="round" d="M1.2,-1 L1.6,1.6 M3.2,-0.6 L3.4,1.8"/>'}</g>
+    <ellipse class="blob" fill="${fill}" rx="${hind ? 9.4 : 6.6}" ry="${hind ? 7.4 : 5.4}"/>`
+}
+/* Builds one cub inside an SVG group; returns a function that draws a solved skeleton */
+function mountWolf(svg, opts = {}) {
+  const world = el('g', {}, svg)
+  const ground = el('g', { class: 'ground' }, world)
+  const plat = el('g', { class: 'plat' }, world)
+  const shadow = el('ellipse', { fill: 'url(#w-shadow)', rx: 34, ry: 4.5 }, world)
+  const root = el('g', {}, world)
+  root.innerHTML = `
+    <g class="tail-back"><g class="tail">${TAIL}</g></g>
+    <g class="leg fh">${legMarkup(true, true)}</g>
+    <g class="leg ff">${legMarkup(true, false)}</g>
+    <g class="head-far"></g>
+    <g class="body">${BODY}</g>
+    <g class="leg nh">${legMarkup(false, true)}</g>
+    <g class="leg nf">${legMarkup(false, false)}</g>
+    <g class="head"><g class="ear earF2">${EAR('url(#w-fur)')}</g><g class="ear earN">${EAR('url(#w-fur)')}</g>${HEAD}</g>
+    <g class="tail-front"><g class="tail">${TAIL}</g></g>
+    <g class="bones"></g>`
+  const fxg = el('g', { class: 'fx' }, world)
+  const q = (s) => root.querySelector(s)
+  const refs = {
+    body: q('.body'), head: q('.head'), headFar: q('.head-far'), earN: q('.earN'), earF: q('.earF2'),
+    tailBack: q('.tail-back'), tailFront: q('.tail-front'), tails: root.querySelectorAll('.tail'),
+    mouthOpen: q('.mouth-open'), tongue: q('.tongue'), line: q('.mouth-line'), blep: q('.blep'), blush: root.querySelectorAll('.blush'),
+    eye: q('.eye'), brow: q('.brow'), bones: q('.bones'),
+    legs: Object.fromEntries(['ff', 'fh', 'nf', 'nh'].map((k) => { const g = q('.' + k); return [k, { u: g.querySelector('.u'), l: g.querySelector('.l'), paw: g.querySelector('.paw'), blob: g.querySelector('.blob') }] })),
+  }
+  let lastEyes = '', lastBrows = '', lastLine = ''
+  let groundOff = 0
+  if (opts.ground !== false) {
+    el('line', { x1: -400, x2: 400, y1: 0.5, y2: 0.5, stroke: 'var(--ground)', 'stroke-width': 1.2 }, ground)
+    for (let i = -16; i <= 16; i++) el('line', { class: 'tick', x1: i * 24, x2: i * 24 + 7, y1: 5, y2: 5, stroke: 'var(--ground)', 'stroke-width': 1.2, 'stroke-linecap': 'round' }, ground)
+  }
+  const ticks = ground.querySelectorAll('.tick')
+
+  return function draw(g, dt = 0, bones = false) {
+    root.setAttribute('transform', `translate(${g.x},${g.y}) scale(${g.sx},${g.sy})`)
+    const floor = g.platform && g.x > g.platform.x0 - 10 ? g.platform.y : 0, lift = clamp((floor - g.y) / 60, 0, 1)
+    shadow.setAttribute('cx', g.x); shadow.setAttribute('cy', floor); shadow.setAttribute('rx', 34 * (1 - lift * 0.5)); shadow.setAttribute('opacity', 1 - lift * 0.7)
+    world.setAttribute('opacity', g.alpha)
+    refs.body.setAttribute('transform', `translate(0,${g.bodyY}) rotate(${g.pitch},0,-28)`)
+    const headT = `translate(${g.N[0]},${g.N[1]}) rotate(${g.headRot}) translate(${g.headX},${g.headY}) scale(1.22)`
+    refs.head.setAttribute('transform', headT)
+    refs.headFar.setAttribute('transform', headT)
+    refs.earN.setAttribute('transform', `translate(18.6,-27.4) rotate(${14 + g.earN})`)
+    refs.earF.setAttribute('transform', `translate(0.6,-27.4) rotate(${-14 - g.earF * 0.6})`)
+    const tailT = `translate(${g.T[0]},${g.T[1]}) rotate(${g.tailRot}) scale(${g.tailW},1)${g.tailFlip ? ' rotate(180) scale(1,-1)' : ''}`
+    refs.tails.forEach((t) => t.setAttribute('transform', tailT))
+    refs.tailBack.style.display = g.tailFront ? 'none' : ''
+    refs.tailFront.style.display = g.tailFront ? '' : 'none'
+    for (const k in g.legs) {
+      const L = g.legs[k], r = refs.legs[k], hind = k[1] === 'h'
+      r.u.setAttribute('x1', L.a[0]); r.u.setAttribute('y1', L.a[1]); r.u.setAttribute('x2', L.j[0]); r.u.setAttribute('y2', L.j[1])
+      r.l.setAttribute('x1', L.j[0]); r.l.setAttribute('y1', L.j[1]); r.l.setAttribute('x2', L.p[0]); r.l.setAttribute('y2', L.p[1])
+      const la = deg(Math.atan2(L.p[1] - L.j[1], L.p[0] - L.j[0])) - 90
+      r.paw.setAttribute('transform', `translate(${L.p[0] + 1.3},${L.p[1] - 1.4}) rotate(${clamp(la * 0.6, -50, 50)})`)
+      const ua = deg(Math.atan2(L.j[1] - L.a[1], L.j[0] - L.a[0]))
+      const t = hind ? 0.42 : 0.25
+      r.blob.setAttribute('transform', `translate(${lerp(L.a[0], L.j[0], t)},${lerp(L.a[1], L.j[1], t)}) rotate(${ua})`)
+    }
+    const open = clamp(g.jaw / 30, 0, 1.15)
+    refs.mouthOpen.style.display = g.jaw > 2 ? '' : 'none'
+    refs.mouthOpen.setAttribute('transform', `translate(9.5,1) scale(${0.75 + open * 0.35},${0.35 + open * 0.75}) translate(-9.5,-1)`)
+    refs.tongue.style.display = g.tongue > 0.05 ? '' : 'none'
+    refs.blush.forEach((b) => b.setAttribute('opacity', g.blush * 0.55))
+    refs.blep.style.display = g.blep && g.jaw < 2 ? '' : 'none'
+    const line = g.jaw < 2 && g.line ? g.line : ''
+    if (line !== lastLine) { refs.line.setAttribute('d', line ? MOUTH_LINES[line] : ''); lastLine = line }
+    if (g.eyes !== lastEyes) { refs.eye.innerHTML = EYES[g.eyes] || EYES.open; lastEyes = g.eyes }
+    if (g.brows !== lastBrows) { refs.brow.innerHTML = BROWS[g.brows] || ''; lastBrows = g.brows }
+
+    // treadmill ground for gaits shown in place
+    groundOff = (groundOff - g.speed * dt) % 24
+    ticks.forEach((tk, i) => tk.setAttribute('transform', `translate(${groundOff},0)`))
+    // platform
+    plat.innerHTML = g.platform ? `<rect x="${g.platform.x0}" y="${g.platform.y}" width="${g.platform.x1 - g.platform.x0}" height="${-g.platform.y}" rx="2" fill="var(--plat)" stroke="var(--plat-line)"/>` : ''
+    // effects and emotes (stage frame)
+    fxg.innerHTML = drawFx(g)
+    // debug skeleton
+    refs.bones.innerHTML = bones ? Object.values(g.legs).map((L) => `<polyline points="${L.a} ${L.j} ${L.p}" fill="none" stroke="var(--accent)" stroke-width=".8"/>${[L.a, L.j, L.p].map((p) => `<circle cx="${p[0]}" cy="${p[1]}" r="1.2" fill="var(--accent)"/>`).join('')}`).join('') +
+      `<circle cx="${g.N[0]}" cy="${g.N[1]}" r="1.4" fill="none" stroke="var(--accent)"/><circle cx="${g.T[0]}" cy="${g.T[1]}" r="1.4" fill="none" stroke="var(--accent)"/>` : ''
+  }
+}
+
+/* Effects: particles in stage coordinates; emotes above the head */
+function drawFx(g) {
+  let s = ''
+  const headX = g.x + (g.N[0] + 12) * g.sx, headY = g.y + (g.N[1] - 30) * g.sy
+  const nose = rotAbout([g.N[0] + 28 + g.headX, g.N[1] - 9 + g.headY], g.N, g.headRot)
+  const noseX = g.x + nose[0] * g.sx, noseY = g.y + nose[1] * g.sy
+  for (const f of g.fx || []) {
+    if (f.k === 'dust') {
+      const big = f.big ? 1.6 : 1, y0 = f.y || 0
+      for (let i = -1; i <= 1; i += 2) for (let j = 0; j < 3; j++) {
+        const p = f.p, r = (1.5 + j) * big * (0.6 + p), x = (f.x || 0) + i * (6 + j * 5) * big * (0.4 + p)
+        s += `<circle cx="${x}" cy="${y0 - 2 - j * 1.5 * p}" r="${r}" fill="var(--dust)" opacity="${(1 - p) * 0.8}"/>`
+      }
+    } else if (f.k === 'snap') {
+      const o = 1 - f.p
+      for (let i = 0; i < 3; i++) { const a = -0.7 + i * 0.7, r1 = 6 + f.p * 4, r2 = 10 + f.p * 5
+        s += `<line x1="${noseX + Math.cos(a) * r1}" y1="${noseY + Math.sin(a) * r1}" x2="${noseX + Math.cos(a) * r2}" y2="${noseY + Math.sin(a) * r2}" stroke="var(--fx)" stroke-width="1.3" stroke-linecap="round" opacity="${o}"/>` }
+    } else if (f.k === 'howl') {
+      for (let i = 0; i < 3; i++) { const p = (f.p + i / 3) % 1, r = 5 + p * 16
+        s += `<path d="M${noseX + r * 0.5},${noseY - r * 0.9} A${r},${r} 0 0 1 ${noseX + r * 0.9},${noseY + r * 0.1}" fill="none" stroke="var(--fx)" stroke-width="1.1" stroke-linecap="round" opacity="${1 - p}"/>` }
+    } else if (f.k === 'sniff') {
+      s += `<circle cx="${noseX + 3 + f.p * 4}" cy="${noseY + 1 - f.p * 3}" r="${0.8 + f.p * 1.2}" fill="none" stroke="var(--fx)" stroke-width=".7" opacity="${1 - f.p}"/>`
+    } else if (f.k === 'shake') {
+      for (let i = 0; i < 6; i++) { const a = i / 6 * TAU + f.p, r = 26 + ((f.p * 30 + i * 7) % 12)
+        s += `<circle cx="${g.x + Math.cos(a) * r}" cy="${g.y - 30 + Math.sin(a) * r * 0.6}" r="1" fill="var(--fx)" opacity=".7"/>` }
+      s += `<path d="M${g.x - 34},${g.y - 40} q-3,6 0,12 M${g.x + 40},${g.y - 46} q3,6 0,12" fill="none" stroke="var(--fx)" stroke-width="1.1" stroke-linecap="round" opacity=".6"/>`
+    } else if (f.k === 'scrabble') {
+      for (let i = 0; i < 3; i++) s += `<circle cx="${11 - f.p * 4 - i * 2}" cy="${-8 + i * 4 - f.p * 3}" r=".9" fill="var(--dust)" opacity="${1 - f.p}"/>`
+    }
+  }
+  const e = g.emote
+  if (e === '?' || e === '!') s += `<text x="${headX}" y="${headY}" style="font-family:var(--font-display)" font-weight="800" font-size="13" fill="var(--accent)" text-anchor="middle">${e}</text>`
+  else if (e === 'z') { const t = performance.now() / 1000
+    for (let i = 0; i < 3; i++) { const p = ((t * 0.35) + i / 3) % 1
+      s += `<text x="${headX - 6 + p * 10}" y="${headY + 18 - p * 20}" style="font-family:var(--font-mono)" font-weight="500" font-size="${5 + p * 5}" fill="var(--muted)" opacity="${Math.sin(Math.PI * p)}">z</text>` } }
+  else if (e === 'heart') s += `<path transform="translate(${headX},${headY - 2}) scale(1.1)" fill="var(--heart)" d="M0,5 C-6,1 -5,-5 -1.8,-4.4 C-0.8,-4.2 0,-3.3 0,-2.5 C0,-3.3 0.8,-4.2 1.8,-4.4 C5,-5 6,1 0,5 Z"/>`
+  else if (e === 'sweat') s += `<path transform="translate(${headX + 8},${headY + 8})" fill="var(--tear)" d="M0,-4 Q3,0 1.4,2.4 Q0,3.4 -1.4,2.4 Q-3,0 0,-4 Z"/>`
+  else if (e === 'stars') { const t = performance.now() / 1000
+    for (let i = 0; i < 3; i++) { const a = t * 3 + i * TAU / 3, x = headX - 4 + Math.cos(a) * 11, y = headY + 12 + Math.sin(a) * 3.5
+      s += `<path transform="translate(${x},${y}) scale(.7)" fill="var(--spark)" d="M0,-5 L1.4,-1.4 L5,0 L1.4,1.4 L0,5 L-1.4,1.4 L-5,0 L-1.4,-1.4 Z"/>` } }
+  return s
+}
+
+/* ---------- Page wiring ---------- */
+const stageSvg = document.getElementById('stage')
+const stageG = el('g', { transform: 'translate(250,220) scale(1.95)' }, stageSvg)
+const drawStage = mountWolf(stageG)
+let current = 'idle', speed = 1, paused = false, bones = false
+let stageTime = 0, prevGeo = null, blendFrom = null, blendT = 1
+
+const library = document.getElementById('library')
+const tiles = []
+const groups = {}
+for (const [key, a] of Object.entries(ANIMS)) {
+  if (!groups[a.group]) {
+    const wrap = document.createElement('div'); wrap.className = 'group'
+    wrap.innerHTML = `<h3>${a.group}</h3><div class="tiles"></div>`
+    library.appendChild(wrap); groups[a.group] = wrap.querySelector('.tiles')
+  }
+  const btn = document.createElement('button')
+  btn.type = 'button'; btn.className = 'tile'; btn.setAttribute('aria-pressed', key === current)
+  btn.innerHTML = `<svg viewBox="-62 -100 132 112" aria-hidden="true"></svg><b>${a.name}</b><small>${a.note}</small>`
+  groups[a.group].appendChild(btn)
+  const draw = mountWolf(btn.querySelector('svg'))
+  tiles.push({ key, draw, btn, off: Math.random() * 3 })
+  btn.addEventListener('click', () => select(key))
+}
+function select(key) {
+  if (key === current) return
+  blendFrom = prevGeo; blendT = 0; current = key; stageTime = 0
+  tiles.forEach((t) => t.btn.setAttribute('aria-pressed', t.key === key))
+  document.getElementById('now-name').textContent = ANIMS[key].name
+  document.getElementById('now-note').textContent = ANIMS[key].note
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+document.getElementById('now-note').textContent = ANIMS[current].note
+
+// actual-size previews
+const miniDraws = ['mini-light', 'mini-dark'].map((id) => mountWolf(document.getElementById(id), { ground: false }))
+miniDraws.forEach((d) => d(solve(ANIMS.idle.fn(0)), 0))
+
+// expressions
+const faces = document.getElementById('faces')
+for (const [name, ex] of EXPRESSIONS) {
+  const fig = document.createElement('figure'); fig.className = 'face'
+  fig.innerHTML = `<svg viewBox="-24 -106 80 80" aria-hidden="true"></svg><figcaption>${name}</figcaption><small>${ex.eyes} · ${ex.mouth}</small>`
+  faces.appendChild(fig)
+  const draw = mountWolf(fig.querySelector('svg'), { ground: false })
+  const pose = base(0, Object.assign({}, SIT, { headA: -4 }, ex, { eyes: ex.eyes }))
+  if (ex.headA) pose.headA = ex.headA
+  draw(solve(pose))
+}
+
+// controls
+document.querySelectorAll('[data-speed]').forEach((b) => b.addEventListener('click', () => {
+  speed = +b.dataset.speed; document.querySelectorAll('[data-speed]').forEach((x) => x.setAttribute('aria-pressed', x === b))
+}))
+document.getElementById('bones').addEventListener('change', (e) => (bones = e.target.checked))
+document.getElementById('pause').addEventListener('change', (e) => (paused = e.target.checked))
+document.querySelectorAll('[data-coat]').forEach((b) => b.addEventListener('click', () => {
+  document.documentElement.dataset.coat = b.dataset.coat; document.querySelectorAll('[data-coat]').forEach((x) => x.setAttribute('aria-pressed', x === b))
+}))
+document.querySelectorAll('[data-theme-btn]').forEach((b) => b.addEventListener('click', () => {
+  const v = b.dataset.themeBtn
+  if (v === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v
+  document.querySelectorAll('[data-theme-btn]').forEach((x) => x.setAttribute('aria-pressed', x === b))
+}))
+
+// loop
+let last = performance.now(), clock = 0
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000) * (paused ? 0 : speed)
+  last = now; clock += dt; stageTime += dt
+  let geo = solve(ANIMS[current].fn(stageTime))
+  if (blendFrom && blendT < 1) { blendT = Math.min(1, blendT + dt / 0.3); geo = mixGeo(blendFrom, geo, ease(blendT)) }
+  prevGeo = geo
+  drawStage(geo, dt, bones)
+  for (const t of tiles) t.draw(solve(ANIMS[t.key].fn(clock + t.off)), dt, false)
+  const idle = solve(ANIMS.idle.fn(clock))
+  miniDraws.forEach((d) => d(idle, 0))
+  requestAnimationFrame(frame)
+}
+requestAnimationFrame(frame)
+
+// hooks for checking poses without the animation loop (e.g. when the tab is in the background)
+window.__wolf = {
+  anims: Object.keys(ANIMS),
+  show(key, t) { current = key; stageTime = t; blendFrom = null; const g = solve(ANIMS[key].fn(t)); drawStage(g, 0, bones); return g },
+  stageSVG() {
+    const cs = getComputedStyle(document.documentElement)
+    return stageSvg.outerHTML.replace(/var\((--[\w-]+)\)/g, (_, v) => cs.getPropertyValue(v).trim() || '#000')
+  },
+}
+</script>
+</body>
+</html>

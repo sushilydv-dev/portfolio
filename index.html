@@ -2,16 +2,20 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/logo.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sushil Dev</title>
+    <meta name="description" content="Personal portfolio" />
+    <script>
+      // Light is the default; apply a saved choice before the page paints, so there is no flash
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem('theme-choice') === 'dark' ? 'dark' : 'light'
+      } catch (e) {}
+    </script>
+    <title>Portfolio</title>
   </head>
   <body>
-    
-    
     <div id="root"></div>
-   
     <script type="module" src="/src/main.jsx"></script>
-   
   </body>
 </html>

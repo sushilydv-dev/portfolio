@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fox Mascot 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root { --bg: #efeee9; --bg2: #e2e0d8; --panel: rgba(255,255,255,.84); --ink: #1c1c1a; --muted: #5d5d59; --line: #d8d6ce; --accent: #2747e6; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #1a1a19; --bg2: #101010; --panel: rgba(27,27,27,.86); --ink: #ececea; --muted: #a1a19e; --line: #2f2f2c; --accent: #7b93ff; color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg: #1a1a19; --bg2: #101010; --panel: rgba(27,27,27,.86); --ink: #ececea; --muted: #a1a19e; --line: #2f2f2c; --accent: #7b93ff; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: radial-gradient(ellipse at 50% 35%, var(--bg), var(--bg2)); color: var(--ink); font: 14px/1.5 "Instrument Sans", system-ui, sans-serif; overflow: hidden; }
+  canvas { display: block; width: 100vw; height: 100vh; cursor: grab; touch-action: none; }
+  canvas:active { cursor: grabbing; }
+  .ui { position: fixed; left: 16px; top: 16px; bottom: 16px; width: min(310px, calc(100vw - 32px)); padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); backdrop-filter: blur(10px); display: flex; flex-direction: column; gap: 14px; overflow: auto; }
+  @media (max-width: 640px) { .ui { bottom: auto; max-height: 46vh; } }
+  .ui h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  .ui p { margin: 0; color: var(--muted); font-size: 13px; }
+  .row { display: flex; flex-wrap: wrap; gap: 6px; }
+  button { font: inherit; font-size: 13px; color: var(--ink); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 5px 11px; cursor: pointer; }
+  button:hover { border-color: var(--ink); }
+  button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .eyebrow { margin: 0; font: 500 11px "JetBrains Mono", monospace; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+  .hint { position: fixed; bottom: 18px; right: 20px; font: 12px "JetBrains Mono", monospace; color: var(--muted); }
+  #now { font-size: 13px; color: var(--muted); min-height: 2.6em; }
+</style>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js" } }
+</script>
+</head>
+<body>
+<div class="ui">
+  <div>
+    <p class="eyebrow">Mascot · 3D preview</p>
+    <h1>Fox kit</h1>
+  </div>
+  <p>Drag to spin it all the way round, scroll to zoom. Pick what it does and how it feels.</p>
+  <div>
+    <p class="eyebrow">Moves</p>
+    <div class="row" id="moves"></div>
+    <p id="now"></p>
+  </div>
+  <div>
+    <p class="eyebrow">Mood</p>
+    <div class="row" id="moods"></div>
+  </div>
+  <div>
+    <p class="eyebrow">View</p>
+    <div class="row">
+      <button type="button" id="spin" aria-pressed="true">Auto-spin</button>
+      <button type="button" id="follow" aria-pressed="true">Follow cursor</button>
+      <button type="button" id="fur" aria-pressed="true">Fur</button>
+    </div>
+  </div>
+  <div class="row" role="group" aria-label="Background">
+    <button type="button" data-theme-btn="light" aria-pressed="false">Light</button>
+    <button type="button" data-theme-btn="dark" aria-pressed="false">Dark</button>
+    <button type="button" data-theme-btn="auto" aria-pressed="true">Auto</button>
+  </div>
+</div>
+<p class="hint">drag to rotate · scroll to zoom</p>
+
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js'
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js'
+
+/* ===========================================================================
+   Scene
+   ========================================================================= */
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+renderer.setSize(innerWidth, innerHeight)
+renderer.outputColorSpace = THREE.SRGBColorSpace
+renderer.toneMapping = THREE.ACESFilmicToneMapping
+renderer.toneMappingExposure = 1.05
+renderer.shadowMap.enabled = true
+renderer.shadowMap.type = THREE.PCFSoftShadowMap
+document.body.prepend(renderer.domElement)
+
+const scene = new THREE.Scene()
+const camera = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.1, 100)
+camera.position.set(4.5, 2.6, 8.4)
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.target.set(0, 1.25, 0)
+controls.enableDamping = true
+controls.dampingFactor = 0.08
+controls.autoRotate = true
+controls.autoRotateSpeed = 1.2
+controls.enablePan = false
+controls.minDistance = 4
+controls.maxDistance = 16
+controls.maxPolarAngle = Math.PI * 0.53
+controls.update()
+
+scene.add(new THREE.HemisphereLight(0xfff4e6, 0x8a7a6a, 1.15))
+const key = new THREE.DirectionalLight(0xfff1e0, 2.4)
+key.position.set(3.5, 6, 4.5)
+key.castShadow = true
+key.shadow.mapSize.set(2048, 2048)
+Object.assign(key.shadow.camera, { left: -4, right: 4, top: 4, bottom: -3 })
+key.shadow.radius = 6; key.shadow.bias = -0.0004
+scene.add(key)
+const rim = new THREE.DirectionalLight(0xffe0c0, 1.6)   // back light: makes the fur edges glow
+rim.position.set(-3, 4, -5)
+scene.add(rim)
+const fill = new THREE.DirectionalLight(0xd8e4ff, 0.55)
+fill.position.set(-4, 2, 3)
+scene.add(fill)
+
+const ground = new THREE.Mesh(new THREE.CircleGeometry(7, 64), new THREE.ShadowMaterial({ opacity: 0.22 }))
+ground.rotation.x = -Math.PI / 2
+ground.receiveShadow = true
+scene.add(ground)
+
+// moving ground dots, so walking and running read as travelling while the fox stays in view
+const dots = new THREE.Group()
+scene.add(dots)
+{
+  const m = new THREE.MeshBasicMaterial({ color: 0x8a8680, transparent: true, opacity: 0.35, depthWrite: false })
+  const g = new THREE.CircleGeometry(0.035, 10)
+  for (let i = 0; i < 70; i++) {
+    const d = new THREE.Mesh(g, m)
+    d.rotation.x = -Math.PI / 2
+    d.position.set((Math.random() - 0.5) * 7, 0.002, (Math.random() - 0.5) * 9)
+    dots.add(d)
+  }
+}
+
+/* ===========================================================================
+   Palette, helpers
+   ========================================================================= */
+const C = {
+  orange: new THREE.Color('#e9762b'), orangeDeep: new THREE.Color('#c85a1c'), white: new THREE.Color('#fbf6ee'),
+  cream: new THREE.Color('#f3e2cf'), dark: new THREE.Color('#3a2820'), nose: new THREE.Color('#1c1412'),
+  blush: new THREE.Color('#ff9a8f'), mouth: new THREE.Color('#5a1f22'), tongue: new THREE.Color('#ef7b86'),
+}
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v))
+const lerp = (a, b, t) => a + (b - a) * t
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t) }
+const ease = (t) => t * t * (3 - 2 * t)
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1)
+const pulse = (t, period, dur, off = 0) => { const p = (t + off) % period; return p < dur ? Math.sin(Math.PI * p / dur) : 0 }
+const mix3 = (a, b, t, out) => out.copy(a).lerp(b, t)
+const glossy = (color, rough = 0.25) => new THREE.MeshPhysicalMaterial({ color, roughness: rough, clearcoat: 1, clearcoatRoughness: 0.12 })
+function paint(geo, fn) {
+  const p = geo.attributes.position, cols = new Float32Array(p.count * 3), c = new THREE.Color(), v = new THREE.Vector3()
+  for (let i = 0; i < p.count; i++) { v.fromBufferAttribute(p, i); fn(v, c); cols.set([c.r, c.g, c.b], i * 3) }
+  geo.setAttribute('color', new THREE.BufferAttribute(cols, 3))
+  return geo
+}
+
+/* ===========================================================================
+   Shell fur: a solid base plus stacked shells pushed out along the normals.
+   A strand texture discards pixels on higher shells, leaving tapering hairs.
+   ========================================================================= */
+const SHELLS = 20
+const noiseTex = (() => {
+  const n = 256, data = new Uint8Array(n * n * 4)
+  for (let i = 0; i < n * n; i++) { const v = Math.pow(Math.random(), 0.55) * 255; data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = v; data[i * 4 + 3] = 255 }
+  const t = new THREE.DataTexture(data, n, n)
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.magFilter = t.minFilter = THREE.NearestFilter; t.needsUpdate = true
+  return t
+})()
+const wind = new THREE.Vector3()
+const furShells = []
+function furMaterial(shell, len, density) {
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, metalness: 0 })
+  m.defines = { USE_UV: '' }
+  m.userData.u = { uShell: { value: shell }, uLen: { value: len }, uDens: { value: density }, uNoise: { value: noiseTex }, uWind: { value: wind } }
+  m.onBeforeCompile = (sh) => {
+    Object.assign(sh.uniforms, m.userData.u)
+    sh.vertexShader = 'uniform float uShell; uniform float uLen; uniform vec3 uWind;\n' + sh.vertexShader.replace('#include <begin_vertex>', `#include <begin_vertex>
+      transformed += normal * uLen * uShell;
+      transformed.y -= uLen * uShell * uShell * 0.55;
+      transformed += uWind * uShell * uShell * uLen;`)
+    sh.fragmentShader = 'uniform float uShell; uniform float uDens; uniform sampler2D uNoise;\n' + sh.fragmentShader.replace('#include <color_fragment>', `#include <color_fragment>
+      float strand = texture2D(uNoise, vUv * uDens).r;
+      if (uShell > 0.0 && strand < uShell * 0.98 + 0.02) discard;
+      diffuseColor.rgb *= mix(0.62, 1.06, uShell);`)
+  }
+  m.customProgramCacheKey = () => 'fur'
+  return m
+}
+function furry(geo, len, density) {
+  const g = new THREE.Group()
+  const base = new THREE.Mesh(geo, furMaterial(0, len, density))
+  base.castShadow = true; base.receiveShadow = true
+  g.add(base)
+  for (let i = 1; i <= SHELLS; i++) { const s = new THREE.Mesh(geo, furMaterial(i / SHELLS, len, density)); g.add(s); furShells.push(s) }
+  return g
+}
+const ball = (rx, ry, rz, w = 48, h = 32) => { const g = new THREE.SphereGeometry(1, w, h); g.scale(rx, ry, rz); return g }
+
+/* ===========================================================================
+   Rig. The fox stands on +y, faces +z. Joints are groups; the body pivots at
+   the hips so sitting, bowing and running pitch it naturally.
+   ========================================================================= */
+const HIP_Y = 1.1
+const fox = new THREE.Group()            // root: moves for jumps
+scene.add(fox)
+const body = new THREE.Group()           // pivot at the hips
+body.position.set(0, HIP_Y, -0.55)
+fox.add(body)
+
+// torso, painted white underneath and on the chest
+{
+  const geo = ball(0.7, 0.66, 1.0, 64, 48)
+  paint(geo, (v, c) => {
+    const under = sstep(-0.2, -0.55, v.y) * 0.85
+    const chest = sstep(0.45, 0.85, v.z) * sstep(-0.6, 0.15, v.y)
+    mix3(C.orange, C.white, Math.max(under, chest), c)
+    if (v.y > 0.4) c.lerp(C.orangeDeep, 0.18 * sstep(0.4, 0.66, v.y))
+  })
+  const torso = furry(geo, 0.1, 30)
+  torso.position.set(0, 0.05, 0.55)
+  body.add(torso)
+  // fluffy white chest ruff
+  const ruff = furry(paint(ball(0.48, 0.52, 0.4), (v, c) => c.copy(C.white)), 0.2, 26)
+  ruff.position.set(0, 0.12, 1.32)
+  body.add(ruff)
+}
+
+/* Legs: upper and lower segments around joints, a paw at the bottom */
+const L1 = 0.52, L2 = 0.5
+function makeLeg(front, x) {
+  const upper = new THREE.Group(), lower = new THREE.Group(), paw = new THREE.Group()
+  const uGeo = paint(new THREE.CapsuleGeometry(front ? 0.15 : 0.17, L1 - 0.12, 8, 24), (v, c) => front ? mix3(C.orange, C.dark, sstep(0.0, -0.22, v.y), c) : c.copy(C.orange))
+  const u = furry(uGeo, 0.05, 40); u.position.y = -L1 / 2
+  upper.add(u)
+  if (!front) {   // big fluffy haunch on the hind legs
+    const th = furry(paint(ball(0.3, 0.38, 0.44), (v, c) => mix3(C.orange, C.orangeDeep, sstep(0.2, -0.4, v.y) * 0.3, c)), 0.09, 30)
+    th.position.set(x > 0 ? 0.04 : -0.04, -0.1, 0.04)
+    upper.add(th)
+  }
+  const lGeo = paint(new THREE.CapsuleGeometry(0.12, L2 - 0.1, 8, 20), (v, c) => c.copy(C.dark))
+  const l = furry(lGeo, 0.035, 44); l.position.y = -L2 / 2
+  lower.add(l)
+  const pawMesh = new THREE.Mesh(ball(0.17, 0.1, 0.23, 32, 24), new THREE.MeshStandardMaterial({ color: C.dark, roughness: 0.85 }))
+  pawMesh.position.set(0, 0.0, 0.06); pawMesh.castShadow = true
+  paw.add(pawMesh)
+  lower.position.y = -L1
+  paw.position.y = -L2
+  upper.add(lower); lower.add(paw)
+  return { upper, lower, paw, front, bend: front ? 1 : -1 }
+}
+const legs = {
+  fl: makeLeg(true, -1), fr: makeLeg(true, 1), hl: makeLeg(false, -1), hr: makeLeg(false, 1),
+}
+// front legs hang from the shoulders (inside the body); hind legs from the hips (on the root)
+legs.fl.upper.position.set(-0.27, -0.12, 1.12); legs.fr.upper.position.set(0.27, -0.12, 1.12)
+body.add(legs.fl.upper, legs.fr.upper)
+legs.hl.upper.position.set(-0.31, HIP_Y, -0.5); legs.hr.upper.position.set(0.31, HIP_Y, -0.5)
+fox.add(legs.hl.upper, legs.hr.upper)
+
+/* Tail: five joints, getting fluffier then tapering to a white tip */
+const tailJoints = []
+{
+  let parent = body
+  const N = 5, segLen = 0.34
+  const base = new THREE.Group(); base.position.set(0, 0.22, -0.38); body.add(base); parent = base
+  for (let i = 0; i < N; i++) {
+    const j = new THREE.Group()
+    if (i > 0) j.position.z = -segLen
+    const t0 = i / N, r = [0.17, 0.25, 0.29, 0.27, 0.19][i]
+    const geo = paint(ball(r, r, segLen * 1.25, 40, 28), (v, c) => mix3(C.orange, C.white, i === 4 ? sstep(0.06, -0.12, v.z) : 0, c))
+    const m = furry(geo, 0.17 - t0 * 0.02, 24)
+    m.position.z = -segLen / 2
+    j.add(m)
+    parent.add(j)
+    tailJoints.push(j)
+    parent = j
+  }
+  // soft white tip
+  const tip = furry(paint(ball(0.11, 0.11, 0.17, 24, 16), (v, c) => c.copy(C.white)), 0.12, 26)
+  tip.position.z = -0.42
+  tailJoints[4].add(tip)
+}
+
+/* Head */
+const neck = new THREE.Group()
+neck.position.set(0, 0.3, 1.18)
+body.add(neck)
+const head = new THREE.Group()
+head.position.set(0, 0.55, 0.22)
+head.scale.setScalar(0.92)
+neck.add(head)
+const face = {}
+{
+  const geo = new THREE.SphereGeometry(1, 128, 96)
+  const p = geo.attributes.position, v = new THREE.Vector3()
+  for (let i = 0; i < p.count; i++) {
+    v.fromBufferAttribute(p, i)
+    const cheek = sstep(0.1, -0.35, v.y) * sstep(0.3, 0.85, Math.abs(v.x)) * sstep(-0.5, 0.2, v.z)
+    v.x *= 1 + 0.28 * cheek; v.y -= 0.08 * cheek; v.z *= 0.92
+    p.setXYZ(i, v.x, v.y, v.z)
+  }
+  geo.computeVertexNormals()
+  paint(geo, (vv, c) => {
+    const ax = Math.abs(vv.x)
+    const mask = sstep(0.1, -0.08, vv.y - (-0.28 + 0.62 * ax * ax + 0.1 * ax)) * sstep(-0.05, 0.38, vv.z)
+    mix3(C.orange, C.white, mask, c)
+    if (vv.y > 0.55) c.lerp(C.orangeDeep, 0.25 * sstep(0.55, 1, vv.y))
+  })
+  const skull = furry(geo, 0.065, 46)
+  skull.scale.set(1.05, 0.94, 0.98)
+  head.add(skull)
+
+  const muzzle = furry(paint(ball(1, 1, 1), (vv, c) => mix3(C.white, C.orange, sstep(0.3, 0.85, vv.y) * sstep(-0.2, 0.6, vv.z) * 0.85, c)), 0.025, 70)
+  muzzle.scale.set(0.42, 0.32, 0.52); muzzle.position.set(0, -0.3, 0.7)
+  head.add(muzzle)
+  const nose = new THREE.Mesh(ball(0.15, 0.1, 0.11, 32, 24), glossy(C.nose, 0.3))
+  nose.position.set(0, -0.2, 1.2)
+  head.add(nose)
+
+  // closed mouth: a little "w"
+  const mouthMat = new THREE.MeshStandardMaterial({ color: C.nose, roughness: 0.6 })
+  face.mouthW = new THREE.Group()
+  for (const pts of [[[0, -0.29, 1.214], [0, -0.4, 1.205]], [[0, -0.4, 1.205], [-0.065, -0.452, 1.172], [-0.15, -0.41, 1.168]], [[0, -0.4, 1.205], [0.065, -0.452, 1.172], [0.15, -0.41, 1.168]]])
+    face.mouthW.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((q) => new THREE.Vector3(...q))), 12, 0.014, 8, false), mouthMat))
+  head.add(face.mouthW)
+  // open mouth with tongue (scaled by how open it is)
+  face.mouthOpen = new THREE.Group()
+  face.mouthOpen.position.set(0, -0.47, 1.1)
+  const cavity = new THREE.Mesh(ball(0.15, 0.12, 0.08, 24, 16), new THREE.MeshStandardMaterial({ color: C.mouth, roughness: 0.7 }))
+  face.mouthOpen.add(cavity)
+  face.tongue = new THREE.Mesh(ball(0.09, 0.04, 0.1, 24, 16), new THREE.MeshStandardMaterial({ color: C.tongue, roughness: 0.5 }))
+  face.tongue.position.set(0, -0.05, 0.06)
+  face.mouthOpen.add(face.tongue)
+  head.add(face.mouthOpen)
+
+  face.blush = []
+  for (const s of [-1, 1]) {
+    const b = new THREE.Mesh(new THREE.CircleGeometry(0.11, 24), new THREE.MeshBasicMaterial({ color: C.blush, transparent: true, opacity: 0.38, depthWrite: false }))
+    const at = new THREE.Vector3(s * 0.62, -0.2, 0.74)
+    b.position.copy(at); b.lookAt(at.clone().multiplyScalar(2)); b.position.multiplyScalar(1.06)
+    head.add(b); face.blush.push(b)
+  }
+}
+
+/* Eyes: glossy, amber iris, catch-lights; plus closed and happy arcs */
+const irisTex = (() => {
+  const s = 256, cv = document.createElement('canvas'); cv.width = cv.height = s
+  const g = cv.getContext('2d')
+  const r = g.createRadialGradient(s / 2, s * 0.6, 4, s / 2, s / 2, s / 2)
+  r.addColorStop(0, '#2a140a'); r.addColorStop(0.42, '#140904'); r.addColorStop(0.5, '#7a3f16'); r.addColorStop(0.78, '#b4692a'); r.addColorStop(0.95, '#3a1d0b'); r.addColorStop(1, '#120805')
+  g.fillStyle = r; g.fillRect(0, 0, s, s)
+  g.globalAlpha = 0.25; g.fillStyle = '#ffd39a'; g.beginPath(); g.ellipse(s / 2, s * 0.78, s * 0.3, s * 0.1, 0, 0, Math.PI * 2); g.fill()
+  const t = new THREE.CanvasTexture(cv); t.colorSpace = THREE.SRGBColorSpace
+  return t
+})()
+const eyes = []
+{
+  const arcMat = new THREE.MeshStandardMaterial({ color: C.nose, roughness: 0.6 })
+  const arc = (pts) => new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts.map((q) => new THREE.Vector3(...q))), 16, 0.022, 8, false), arcMat)
+  for (const s of [-1, 1]) {
+    const dir = new THREE.Vector3(s * 0.42, 0.08, 0.9).normalize()
+    const at = dir.clone().multiply(new THREE.Vector3(1.05, 0.94, 0.9))
+    const eye = new THREE.Group()
+    eye.position.copy(at); eye.lookAt(at.clone().add(dir))
+    const open = new THREE.Group()
+    const bl = new THREE.Mesh(new THREE.SphereGeometry(0.21, 40, 32), glossy(new THREE.Color('#120b08'), 0.12))
+    bl.scale.set(0.86, 1, 0.55); open.add(bl)
+    const iris = new THREE.Mesh(new THREE.CircleGeometry(0.16, 40), new THREE.MeshStandardMaterial({ map: irisTex, roughness: 0.25 }))
+    iris.scale.set(0.86, 1, 1); iris.position.z = 0.117; open.add(iris)
+    const hl = (r, x, y, o = 1) => { const m = new THREE.Mesh(new THREE.CircleGeometry(r, 24), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: o })); m.position.set(x, y, 0.121); open.add(m) }
+    hl(0.055, s * 0.04, 0.07); hl(0.025, -s * 0.05, -0.06, 0.85); hl(0.012, s * 0.07, -0.02, 0.7)
+    // upper lid for the half-closed (sleepy) look
+    const lid = new THREE.Mesh(new THREE.SphereGeometry(0.215, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({ color: C.orange, roughness: 0.9 }))
+    lid.rotation.x = Math.PI / 2 - 0.05; lid.scale.set(0.9, 0.58, 1.02)
+    open.add(lid)
+    const closed = arc([[-0.15, 0.02, 0.1], [0, -0.06, 0.12], [0.15, 0.02, 0.1]])
+    const happy = arc([[-0.15, -0.04, 0.1], [0, 0.07, 0.12], [0.15, -0.04, 0.1]])
+    eye.add(open, closed, happy)
+    eye.userData = { open, closed, happy, lid, s }
+    head.add(eye); eyes.push(eye)
+  }
+}
+
+/* Ears: orange outside with dark tips, fluffy cream inside */
+const ears = []
+for (const s of [-1, 1]) {
+  const ear = new THREE.Group()
+  ear.position.set(s * 0.56, 0.72, -0.08)
+  const outer = furry(paint(new THREE.ConeGeometry(0.4, 0.95, 40, 8), (v, c) => mix3(C.orange, C.dark, sstep(0.05, 0.3, v.y), c)), 0.03, 60)
+  outer.scale.set(1, 1, 0.46); outer.position.y = 0.4
+  ear.add(outer)
+  const inner = furry(paint(new THREE.ConeGeometry(0.25, 0.66, 32, 6), (v, c) => mix3(C.cream, C.white, sstep(-0.3, 0.1, v.y), c)), 0.11, 32)
+  inner.scale.set(1, 1, 0.26); inner.position.set(0, 0.34, 0.07)
+  ear.add(inner)
+  ear.userData.s = s
+  head.add(ear); ears.push(ear)
+}
+
+/* ===========================================================================
+   Pose → skeleton. A pose is plain numbers; the solver turns paw targets into
+   joint angles with two-bone inverse kinematics in the side (y–z) plane.
+   ========================================================================= */
+const tmp = new THREE.Vector3()
+function solveLeg(leg, target, parentPitch) {
+  leg.upper.getWorldPosition(tmp)
+  const dz = target.z - tmp.z, dy = target.y - tmp.y
+  const d = clamp(Math.hypot(dz, dy), 0.12, L1 + L2 - 0.005)
+  const base = Math.atan2(dz, -dy)                      // 0 = straight down, + = forward
+  const a = Math.acos(clamp((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d), -1, 1))
+  const b = Math.acos(clamp((L2 * L2 + d * d - L1 * L1) / (2 * L2 * d), -1, 1))
+  const upperW = -(base + leg.bend * a)                 // world rotation.x of the upper bone
+  const lowerW = -(base - leg.bend * b)
+  leg.upper.rotation.x = upperW - parentPitch
+  leg.lower.rotation.x = lowerW - upperW
+  leg.paw.rotation.x = -lowerW * 0.85
+}
+
+const DEFAULT = {
+  rootY: 0, rootZ: 0, bodyY: HIP_Y, pitch: 0, roll: 0, sy: 1,
+  feet: { fl: [0.02, 0], fr: [0.02, 0], hl: [-0.02, 0], hr: [-0.02, 0] },
+  headPitch: 0, headYaw: 0, headTilt: 0, earBack: 0, earL: 0, earR: 0,
+  tailLift: 0.35, tailCurl: 0.12, tailWag: 0, tailSide: 0,
+  eyes: 'open', mouth: 0, tongue: 0, blush: 0.38, speed: 0, look: 1,
+}
+const pose = (o) => Object.assign({}, DEFAULT, o, { feet: Object.assign({}, DEFAULT.feet, o.feet || {}) })
+const blinking = (t) => (t % 3.7) < 0.13 || ((t + 1.1) % 11) < 0.12
+
+function gait(ph, off, duty, stride, lift) {
+  const p = ((ph - off) % 1 + 1) % 1
+  if (p < duty) return [stride / 2 - stride * (p / duty), 0]
+  const u = (p - duty) / (1 - duty)
+  return [-stride / 2 + stride * ease(u), lift * Math.sin(Math.PI * u)]
+}
+
+/* ===========================================================================
+   Moves
+   ========================================================================= */
+const SIT = { bodyY: 0.58, pitch: -0.66, feet: { fl: [0.02, 0], fr: [0.02, 0], hl: [0.46, 0], hr: [0.46, 0] }, tailLift: 0.12, tailCurl: 0.28, tailSide: 0.62 }
+const MOVES = {
+  sit: { name: 'Sit', note: 'Sitting tall, breathing, an ear flick now and then, tail curled round its paws.',
+    fn: (t) => pose(Object.assign({}, SIT, { sy: 1 + Math.sin(t * 2.1) * 0.012, headTilt: pulse(t, 7.5, 1.6, 3) * 0.26, earL: pulse(t, 4.3, 0.22) * 0.5, earR: pulse(t, 6, 0.22, 2) * 0.5 })) },
+  stand: { name: 'Stand', note: 'Standing alert, weight shifting, tail swaying low.',
+    fn: (t) => pose({ sy: 1 + Math.sin(t * 2.1) * 0.01, bodyY: HIP_Y - 0.01 + Math.sin(t * 2.1) * 0.006, tailWag: Math.sin(t * 1.2) * 0.12, earL: pulse(t, 5.1, 0.22) * 0.5 }) },
+  walk: { name: 'Walk', note: 'Four-beat walk: left hind, left front, right hind, right front.',
+    fn: (t) => { const P = 1.0, ph = t / P, d = 0.62, s = 0.42, l = 0.12
+      return pose({ feet: { hl: gait(ph, 0, d, s, l), fl: gait(ph, 0.25, d, s, l), hr: gait(ph, 0.5, d, s, l), fr: gait(ph, 0.75, d, s, l) },
+        bodyY: HIP_Y - 0.03 + Math.cos(Math.PI * 4 * ph) * 0.015, roll: Math.sin(Math.PI * 2 * ph) * 0.03, headPitch: Math.sin(Math.PI * 4 * ph + 0.6) * 0.04,
+        tailWag: Math.sin(Math.PI * 2 * ph) * 0.18, speed: s / (d * P) }) } },
+  trot: { name: 'Trot', note: 'Diagonal pairs move together, with a little float between steps.',
+    fn: (t) => { const P = 0.55, ph = t / P, d = 0.44, s = 0.6, l = 0.2
+      return pose({ feet: { hl: gait(ph, 0, d, s, l), fr: gait(ph, 0, d, s, l), hr: gait(ph, 0.5, d, s, l), fl: gait(ph, 0.5, d, s, l) },
+        bodyY: HIP_Y - 0.02 + Math.cos(Math.PI * 4 * ph) * 0.03, headPitch: 0.06, earBack: 0.15, tailLift: 0.2, tailCurl: 0.02, tailWag: Math.sin(Math.PI * 4 * ph) * 0.08, speed: s / (d * P) }) } },
+  run: { name: 'Run', note: 'Bounding gallop: hind pair, front pair, then all four paws in the air.',
+    fn: (t) => { const P = 0.44, ph = t / P, d = 0.32, s = 0.9, l = 0.32, flex = Math.sin(Math.PI * 2 * ph + 1.3)
+      return pose({ feet: { hl: gait(ph, 0, d, s, l), hr: gait(ph, 0.07, d, s, l), fl: gait(ph, 0.46, d, s, l), fr: gait(ph, 0.53, d, s, l) },
+        pitch: flex * 0.12, rootY: 0.14 * Math.max(0, Math.sin(Math.PI * 2 * (ph - 0.24))), bodyY: HIP_Y - 0.05, headPitch: 0.1 - flex * 0.08,
+        earBack: 0.5, tailLift: 0.05, tailCurl: -0.04, tailWag: Math.sin(Math.PI * 2 * ph) * 0.1, eyes: 'open', mouth: 0.55, tongue: 1, speed: s / (d * P) }) } },
+  jump: { name: 'Jump', note: 'Gathers itself, springs straight up, tucks its paws and lands with a squash.',
+    fn: (t) => { const c = t % 2.2
+      if (c < 0.45) { const g = ease(seg(c, 0.1, 0.45)); return pose({ bodyY: HIP_Y - g * 0.22, pitch: -g * 0.1, feet: { hl: [0.1 * g, 0], hr: [0.1 * g, 0] }, headPitch: -0.2, earBack: -0.2, eyes: 'wide' }) }
+      if (c < 1.1) { const u = (c - 0.45) / 0.65; return pose({ rootY: 1.3 * Math.sin(Math.PI * u), pitch: lerp(-0.25, 0.15, u), feet: { fl: [0.18, 0.32], fr: [0.18, 0.3], hl: [-0.16, 0.26], hr: [-0.16, 0.24] }, earBack: 0.3, tailLift: 0.8, eyes: 'wide', mouth: 0.3 }) }
+      const l = seg(c, 1.1, 1.4), sq = Math.sin(Math.PI * l) * (1 - l)
+      return pose({ bodyY: HIP_Y - sq * 0.25, sy: 1 - sq * 0.12, eyes: c < 1.5 ? 'squeeze' : 'happy', mouth: c > 1.5 ? 0.4 : 0, tongue: 1, tailWag: Math.sin(c * 16) * 0.35 }) } },
+  bow: { name: 'Play bow', note: 'Front down, rear up, tail wagging: “let’s play”.',
+    fn: (t) => { const b = Math.max(0, Math.sin(t * 6)) * pulse(t, 2.4, 1.1)
+      return pose({ pitch: 0.38, bodyY: HIP_Y - 0.08 - b * 0.05, feet: { fl: [0.42, 0], fr: [0.4, 0] }, headPitch: -0.45, eyes: 'happy', mouth: 0.5, tongue: 1, blush: 0.6,
+        tailLift: 1.0, tailCurl: 0.15, tailWag: Math.sin(t * 15) * 0.55 }) } },
+  pounce: { name: 'Mousing pounce', note: 'The fox classic: crouch, a high arcing leap, nose-first dive into the ground.',
+    fn: (t) => { const c = t % 2.8
+      if (c < 0.9) { const w = Math.abs(Math.sin(c * 20)); return pose({ bodyY: HIP_Y - 0.22 + w * 0.02, pitch: 0.08, feet: { fl: [0.08, 0], fr: [0.08, 0], hl: [0.05, 0], hr: [0.05, 0] }, headPitch: 0.35, earBack: -0.35, eyes: 'wide', tailLift: -0.1, tailWag: Math.sin(c * 26) * 0.12 }) }
+      if (c < 1.55) { const u = (c - 0.9) / 0.65; return pose({ rootY: 1.6 * Math.sin(Math.PI * u), rootZ: lerp(0, 0.9, u), pitch: lerp(-0.7, 1.15, ease(u)), feet: { fl: [0.35, 0.05], fr: [0.33, 0.06], hl: [-0.3, 0.1], hr: [-0.3, 0.1] }, headPitch: lerp(-0.2, 0.4, u), earBack: -0.3, eyes: 'wide', tailLift: lerp(0.2, 1.2, u) }) }
+      if (c < 2.0) return pose({ rootZ: 0.9, pitch: 0.9, bodyY: HIP_Y - 0.05, feet: { fl: [0.1, 0], fr: [0.1, 0] }, headPitch: 0.5, eyes: 'closed', tailLift: 1.3, tailWag: Math.sin(c * 30) * 0.3 })
+      const u = ease(seg(c, 2.0, 2.4))
+      return pose({ rootZ: lerp(0.9, 0, seg(c, 2.4, 2.8)), pitch: lerp(0.9, 0, u), headPitch: lerp(0.5, 0, u), headTilt: Math.sin(c * 30) * 0.15 * (1 - seg(c, 2.3, 2.5)), eyes: 'happy', mouth: 0.4, tongue: 1, tailWag: Math.sin(c * 15) * 0.4 }) } },
+  wag: { name: 'Happy wag', note: 'Fast wag, panting, the whole back end wiggling with it.',
+    fn: (t) => pose({ roll: Math.sin(t * 8.5) * 0.05, headTilt: Math.sin(t * 4.2) * 0.08, eyes: 'happy', mouth: 0.5, tongue: 1, blush: 0.7, earBack: 0.25, tailLift: 0.8, tailCurl: 0.2, tailWag: Math.sin(t * 16) * 0.6 }) },
+  sleep: { name: 'Sleep', note: 'Curled up nose to tail, slow breathing.',
+    fn: (t) => pose({ bodyY: 0.4 + Math.sin(t * 1.5) * 0.01, pitch: 0.04, sy: 1 + Math.sin(t * 1.5) * 0.02, roll: 0.0,
+      feet: { fl: [0.5, -0.05], fr: [0.5, -0.05], hl: [0.5, -0.05], hr: [0.5, -0.05] }, headPitch: 0.62, headYaw: 0.55, headTilt: 0.15, eyes: 'closed', earBack: 0.55,
+      tailLift: -0.55, tailCurl: 0.38, tailSide: 1.0, look: 0 }) },
+}
+
+/* Moods override the face on top of any move */
+const MOODS = {
+  auto: { name: 'Auto' },
+  happy: { name: 'Happy', eyes: 'happy', blush: 0.7 },
+  excited: { name: 'Excited', eyes: 'happy', mouth: 0.6, tongue: 1, blush: 0.6, earBack: -0.2 },
+  curious: { name: 'Curious', eyes: 'wide', headTilt: 0.32, earL: 0.6, earR: -0.25 },
+  sleepy: { name: 'Sleepy', eyes: 'half', earBack: 0.35 },
+  surprised: { name: 'Surprised', eyes: 'wide', mouth: 0.4, tongue: 0, earBack: -0.35 },
+  shy: { name: 'Shy', eyes: 'happy', blush: 1, earBack: 0.6, headTilt: -0.2 },
+}
+
+/* ===========================================================================
+   Applying a pose
+   ========================================================================= */
+let currentMove = 'sit', currentMood = 'auto', follow = true
+const mouse = new THREE.Vector2(), look = new THREE.Vector2()
+addEventListener('pointermove', (e) => mouse.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1))
+let shown = null      // the pose actually displayed (eased toward the target)
+const NUM = ['rootY', 'rootZ', 'bodyY', 'pitch', 'roll', 'sy', 'headPitch', 'headYaw', 'headTilt', 'earBack', 'earL', 'earR', 'tailLift', 'tailCurl', 'tailWag', 'tailSide', 'mouth', 'tongue', 'blush', 'look']
+
+function apply(p, t) {
+  fox.position.set(0, p.rootY, p.rootZ - (currentMove === 'pounce' ? 0.45 : 0))
+  body.position.y = p.bodyY
+  body.rotation.set(p.pitch, 0, p.roll)
+  body.scale.set(1, p.sy, 1)
+  for (const k of ['hl', 'hr']) legs[k].upper.position.y = p.bodyY
+  // head: keep it roughly level when the body pitches, then add the pose and the cursor
+  const camYaw = Math.atan2(camera.position.x, camera.position.z)
+  look.lerp(follow ? mouse : new THREE.Vector2(Math.sin(t * 0.4) * 0.25, Math.sin(t * 0.33) * 0.12), 0.06)
+  const lk = p.look
+  neck.rotation.x = -p.pitch * 0.85 + p.headPitch - look.y * 0.25 * lk
+  neck.rotation.y = clamp(p.headYaw + (camYaw * 0.6 + look.x * 0.45) * lk, -1, 1)
+  neck.rotation.z = p.headTilt + Math.sin(t * 0.7) * 0.03
+  ears.forEach((ear) => {
+    const s = ear.userData.s, own = s < 0 ? p.earL : p.earR
+    ear.rotation.set(-0.12 - p.earBack * 0.9 - own * 0.5, 0, -s * (0.32 + p.earBack * 0.35))
+  })
+  // tail: lift at the base, curl along the joints, wag side to side, sweep to one side
+  tailJoints.forEach((j, i) => {
+    const w = p.tailWag * (0.4 + i * 0.25)
+    j.rotation.x = i === 0 ? p.tailLift : p.tailCurl * (i < 3 ? -0.5 : 1)
+    j.rotation.y = (i === 0 ? 0 : p.tailSide * 0.42) + w * Math.cos(i * 0.6)
+  })
+  // legs
+  fox.updateMatrixWorld(true)
+  const groundY = 0, target = new THREE.Vector3()
+  for (const k of ['fl', 'fr', 'hl', 'hr']) {
+    const leg = legs[k], f = p.feet[k]
+    leg.upper.getWorldPosition(tmp)
+    target.set(tmp.x, groundY + 0.1 + f[1] + Math.max(0, p.rootY), tmp.z + f[0])
+    solveLeg(leg, target, leg.front ? p.pitch : 0)
+  }
+  // face
+  const eyesNow = blinking(t) && p.eyes === 'open' ? 'closed' : p.eyes
+  eyes.forEach((e) => {
+    const u = e.userData
+    u.open.visible = ['open', 'wide', 'half'].includes(eyesNow)
+    u.closed.visible = eyesNow === 'closed' || eyesNow === 'squeeze'
+    u.happy.visible = eyesNow === 'happy'
+    u.lid.visible = eyesNow === 'half'
+    e.scale.setScalar(eyesNow === 'wide' ? 1.14 : 1)
+  })
+  face.mouthW.visible = p.mouth < 0.08
+  face.mouthOpen.visible = p.mouth >= 0.08
+  face.mouthOpen.scale.set(0.8 + p.mouth * 0.4, 0.3 + p.mouth * 1.1, 1)
+  face.tongue.visible = p.tongue > 0.5
+  face.tongue.position.y = -0.05 - p.mouth * 0.05
+  face.blush.forEach((b) => (b.material.opacity = p.blush))
+}
+
+/* ===========================================================================
+   Loop, UI
+   ========================================================================= */
+const movesRow = document.getElementById('moves'), moodsRow = document.getElementById('moods')
+const now = document.getElementById('now')
+let moveTime = 0
+for (const [k, m] of Object.entries(MOVES)) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = m.name; b.dataset.move = k; b.setAttribute('aria-pressed', k === currentMove)
+  b.onclick = () => { currentMove = k; moveTime = 0; movesRow.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)); now.textContent = m.note }
+  movesRow.appendChild(b)
+}
+now.textContent = MOVES[currentMove].note
+for (const [k, m] of Object.entries(MOODS)) {
+  const b = document.createElement('button'); b.type = 'button'; b.textContent = m.name; b.setAttribute('aria-pressed', k === currentMood)
+  b.onclick = () => { currentMood = k; moodsRow.querySelectorAll('button').forEach((x) => x.setAttribute('aria-pressed', x === b)) }
+  moodsRow.appendChild(b)
+}
+
+function target(t) {
+  const p = MOVES[currentMove].fn(t)
+  const mood = MOODS[currentMood]
+  if (currentMood !== 'auto') for (const key of ['eyes', 'mouth', 'tongue', 'blush', 'headTilt', 'earBack', 'earL', 'earR']) if (key in mood) p[key] = mood[key]
+  return p
+}
+function step(dt, t) {
+  const tgt = target(moveTime)
+  if (!shown) shown = structuredClone(tgt)
+  const k = 1 - Math.pow(0.0008, dt)       // smooth, frame-rate independent easing toward the target pose
+  for (const key of NUM) shown[key] = lerp(shown[key], tgt[key], k)
+  for (const leg of ['fl', 'fr', 'hl', 'hr']) for (const i of [0, 1]) shown.feet[leg][i] = lerp(shown.feet[leg][i], tgt.feet[leg][i], Math.min(1, k * 3))
+  shown.eyes = tgt.eyes
+  apply(shown, t)
+  // treadmill dots
+  dots.children.forEach((d) => { d.position.z -= tgt.speed * dt; if (d.position.z < -4.5) d.position.z += 9 })
+  dots.visible = tgt.speed > 0
+  wind.set(Math.sin(t * 1.7) * 0.15, 0, Math.cos(t * 1.3) * 0.1 - tgt.speed * 0.06)
+}
+
+const clock = new THREE.Clock()
+let last = 0
+function frame() {
+  const t = clock.getElapsedTime(), dt = Math.min(0.05, t - last); last = t
+  moveTime += dt
+  step(dt, t)
+  controls.update()
+  renderer.render(scene, camera)
+  requestAnimationFrame(frame)
+}
+frame()
+
+addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight) })
+const toggle = (id, fn) => { const b = document.getElementById(id); b.addEventListener('click', () => { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); fn(on) }) }
+toggle('spin', (on) => (controls.autoRotate = on))
+toggle('follow', (on) => (follow = on))
+toggle('fur', (on) => furShells.forEach((m) => (m.visible = on)))
+document.querySelectorAll('[data-theme-btn]').forEach((b) => b.addEventListener('click', () => {
+  const v = b.dataset.themeBtn
+  if (v === 'auto') delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = v
+  document.querySelectorAll('[data-theme-btn]').forEach((x) => x.setAttribute('aria-pressed', x === b))
+}))
+
+// render a still: a move at a time, from an angle (for checking without the live loop)
+window.__fox = {
+  moves: Object.keys(MOVES),
+  shot(move = 'sit', time = 1, angleDeg = 30, mood = 'auto', elev = 2.6, dist = 9.4, w = 900, h = 900) {
+    currentMove = move; currentMood = mood; follow = false; mouse.set(0, 0); look.set(0, 0); shown = null
+    const a = angleDeg * Math.PI / 180
+    camera.position.set(Math.sin(a) * dist, elev, Math.cos(a) * dist); camera.lookAt(controls.target)
+    renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix()
+    shown = structuredClone(target(time)); apply(shown, 0.5)
+    renderer.render(scene, camera)
+    return renderer.domElement.toDataURL('image/png')
+  },
+}
+</script>
+</body>
+</html>

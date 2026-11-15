@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Services Hover Options</title>
+<style>
+  @font-face { font-family: 'Dirtyline'; src: url('../../src/assets/fonts/dirtyline.woff2') format('woff2'); font-display: swap; }
+  @font-face { font-family: 'Chillax'; src: url('../../src/assets/fonts/chillax-variable.woff2') format('woff2'); font-weight: 200 700; font-display: swap; }
+
+  :root { --canvas: #f6f6f3; --ink: #1a1a1a; --muted: #5c5c5a; --line: #e0e0dc; --accent: #2747e6; --soft: #e5e9fd; --ease: cubic-bezier(.65,0,.35,1); --spring: cubic-bezier(.34,1.56,.64,1); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--canvas); color: var(--ink); font-family: 'Chillax', system-ui, sans-serif; -webkit-font-smoothing: antialiased; padding: 48px; }
+  a { color: inherit; text-decoration: none; }
+  h1 { font-size: 15px; font-weight: 500; color: var(--muted); margin-bottom: 40px; }
+  .opt { margin-bottom: 72px; }
+  .opt-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+  .opt-head b { font: 600 13px ui-monospace, Menlo, monospace; color: #fff; background: var(--accent); padding: 3px 9px; border-radius: 999px; }
+  .opt-head span { font-size: 22px; font-weight: 500; color: var(--accent); }
+  .opt-head em { font-style: normal; color: var(--muted); font-size: 14px; }
+  ul { list-style: none; border-top: 1px solid var(--line); }
+  li { border-bottom: 1px solid var(--line); }
+
+  /* Shared row layout (same as the site) */
+  .row { position: relative; display: grid; grid-template-columns: 3.5rem minmax(0,1fr) auto; align-items: center; gap: 0 24px; padding: 26px 0; overflow: hidden; }
+  .ic { width: 40px; height: 40px; color: var(--accent); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; position: relative; }
+  .t { font-size: clamp(28px, 4.2vw, 56px); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; position: relative; }
+  .d { color: var(--muted); margin-top: 6px; max-width: 40rem; position: relative; }
+  .eg { color: var(--muted); white-space: nowrap; position: relative; }
+  .eg b { color: var(--ink); font-weight: 500; }
+  .arrow { display: inline-block; width: .55em; height: .55em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* A: Blue flood */
+  .A .row::before { content: ''; position: absolute; inset: 0; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease); }
+  .A .row:hover::before { transform: scaleX(1); }
+  .A .row > * { transition: color .4s var(--ease), transform .6s var(--ease); }
+  .A .row:hover .ic, .A .row:hover .t, .A .row:hover .eg, .A .row:hover .eg b { color: #fff; }
+  .A .row:hover .d { color: rgba(255,255,255,.8); }
+  .A .row:hover .ic, .A .row:hover > div { transform: translateX(16px); }
+  .A .row:hover .eg { transform: translateX(-16px); }
+
+  /* B: Cursor spotlight */
+  .B .row::before { content: ''; position: absolute; inset: 0; opacity: 0; transition: opacity .4s; background: radial-gradient(260px circle at var(--x,50%) var(--y,50%), rgba(39,71,230,.16), transparent 70%); }
+  .B .row:hover::before { opacity: 1; }
+  .B .t { transition: color .3s; }
+  .B .row:hover .t { color: var(--accent); }
+
+  /* C: Slot roll */
+  .C .slot { display: block; height: 1.15em; overflow: hidden; }
+  .C .slot span { display: block; transition: transform .55s var(--ease); }
+  .C .slot span + span { color: var(--accent); }
+  .C .row:hover .slot span { transform: translateY(-100%); }
+
+  /* D: Accordion open */
+  .D .row { align-items: start; }
+  .D .ic { transition: transform .5s var(--spring); margin-top: 8px; }
+  .D .t { transition: color .3s; }
+  .D .row:hover .t { color: var(--accent); }
+  .D .row:hover .ic { transform: rotate(-10deg) scale(1.12); }
+  .D .wrap { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .5s var(--ease); }
+  .D .wrap > p { overflow: hidden; }
+  .D .row:hover .wrap { grid-template-rows: 1fr; }
+  .D .eg { margin-top: 18px; }
+  .D .plus { display: inline-block; transition: transform .5s var(--ease); color: var(--accent); margin-left: 8px; }
+  .D .row:hover .plus { transform: rotate(45deg); }
+
+  /* E: Font swap (site's Dirtyline display font) */
+  .E .swap { display: grid; }
+  .E .swap > span { grid-area: 1/1; transition: opacity .45s var(--ease), transform .55s var(--ease), filter .45s; }
+  .E .swap > span + span { font-family: 'Dirtyline', sans-serif; font-weight: 400; color: var(--accent); opacity: 0; transform: translateY(.25em); filter: blur(6px); }
+  .E .row:hover .swap > span:first-child { opacity: 0; transform: translateY(-.25em); filter: blur(6px); }
+  .E .row:hover .swap > span + span { opacity: 1; transform: none; filter: none; }
+  .E .eg b { transition: color .3s; }
+  .E .row:hover .eg b { color: var(--accent); }
+
+  /* F: Pill CTA */
+  .F .t { transition: transform .5s var(--ease); }
+  .F .row:hover .t { transform: translateX(10px); }
+  .F .cta { position: relative; display: grid; justify-items: end; }
+  .F .cta > * { grid-area: 1/1; transition: opacity .35s, transform .5s var(--spring); }
+  .F .pill { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 999px; background: var(--accent); color: #fff; font-weight: 500; opacity: 0; transform: translateX(30px) scale(.8); }
+  .F .row:hover .pill { opacity: 1; transform: none; }
+  .F .row:hover .eg { opacity: 0; transform: translateX(-20px); }
+</style>
+</head>
+<body>
+  <h1>Hover each row to try it. Tell me the letter you like.</h1>
+  <div id="root"></div>
+
+<script>
+  const services = [
+    { t: 'Full-stack web apps', d: 'Portals, dashboards and internal tools in React and Node, built end to end and deployed.', eg: 'TIMS', icon: '<path d="M12 2.5 3 7.5l9 5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 16.5 9 5 9-5"/>' },
+    { t: 'Private AI & LLMs', d: 'RAG search, chatbots and agents that run on your own servers, so your data never leaves.', eg: 'NeuroVault', icon: '<path d="M12 2.5 4.5 5.5v5.5c0 4.6 3.1 8.2 7.5 10.5 4.4-2.3 7.5-5.9 7.5-10.5V5.5Z"/><path d="m12 8 1.1 2.9L16 12l-2.9 1.1L12 16l-1.1-2.9L8 12l2.9-1.1Z"/>' },
+    { t: 'Integrations & automation', d: 'SAP and third-party systems wired together, with the repetitive work automated away.', eg: 'SAP Integration', icon: '<path d="M4 8h15M15 4l4 4-4 4"/><path d="M20 16H5M9 12l-4 4 4 4"/>' },
+  ]
+  const arrow = '<svg class="arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M8 7h9v9"/></svg>'
+  const icon = (s) => `<svg class="ic" viewBox="0 0 24 24">${s.icon}</svg>`
+  const eg = (s) => `<span class="eg">e.g. <b>${s.eg}</b></span>`
+
+  const options = [
+    ['A', 'Blue flood', 'Row fills solid blue from the left, text turns white', (s) =>
+      `${icon(s)}<div><div class="t">${s.t}</div><p class="d">${s.d}</p></div>${eg(s)}`],
+    ['B', 'Cursor spotlight', 'A soft blue glow follows your mouse; name turns blue', (s) =>
+      `${icon(s)}<div><div class="t">${s.t}</div><p class="d">${s.d}</p></div>${eg(s)}`],
+    ['C', 'Slot roll', 'Name rolls up and is replaced by "View project ↗"', (s) =>
+      `${icon(s)}<div><div class="t slot"><span>${s.t}</span><span>View ${s.eg} ${arrow}</span></div><p class="d">${s.d}</p></div>${eg(s)}`],
+    ['D', 'Accordion', 'Only names show; the description opens on hover', (s) =>
+      `${icon(s)}<div><div class="t">${s.t}<span class="plus">+</span></div><div class="wrap"><p class="d">${s.d}</p></div></div>${eg(s)}`],
+    ['E', 'Font swap', 'Name morphs into the funky Dirtyline font (your logo font) in blue', (s) =>
+      `${icon(s)}<div><div class="t swap"><span>${s.t}</span><span>${s.t}</span></div><p class="d">${s.d}</p></div>${eg(s)}`],
+    ['F', 'Pill button', 'A blue "Visit ↗" pill springs in on the right; name nudges', (s) =>
+      `${icon(s)}<div><div class="t">${s.t}</div><p class="d">${s.d}</p></div><span class="cta">${eg(s)}<span class="pill">Visit ${s.eg} ${arrow}</span></span>`],
+  ]
+
+  document.getElementById('root').innerHTML = options.map(([k, name, note, render]) => `
+    <section class="opt ${k}">
+      <div class="opt-head"><b>${k}</b><span>${name}</span><em>${note}</em></div>
+      <ul>${services.map((s) => `<li><a class="row" href="#">${render(s)}</a></li>`).join('')}</ul>
+    </section>`).join('')
+
+  document.querySelectorAll('.B .row').forEach((row) => row.addEventListener('pointermove', (e) => {
+    const r = row.getBoundingClientRect()
+    row.style.setProperty('--x', `${e.clientX - r.left}px`)
+    row.style.setProperty('--y', `${e.clientY - r.top}px`)
+  }))
+  document.querySelectorAll('a[href="#"]').forEach((a) => a.addEventListener('click', (e) => e.preventDefault()))
+</script>
+</body>
+</html>
