@@ -73,10 +73,10 @@ function SendButton({ sending }) {
   )
 }
 
-// Messages are delivered by Web3Forms (a free form-to-email service) when an access key is set
-// in .env.local as VITE_WEB3FORMS_KEY. Without a key, sending opens the visitor's email app
-// with the message written out instead.
-const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY
+// Messages are delivered by Web3Forms (a free form-to-email service). The access key is public by
+// design (it only lets the form send to your inbox), so it's set here; VITE_WEB3FORMS_KEY in
+// .env.local overrides it. Without a key, sending opens the visitor's email app instead.
+const WEB3FORMS_KEY = import.meta.env.VITE_WEB3FORMS_KEY || 'cd9e2330-81c1-43a3-ba76-f263975302cb'
 
 const mailtoFor = ({ name, email, topic, message }) =>
   `mailto:${profile.email}?subject=${encodeURIComponent(`${topic} · ${name}`)}&body=${encodeURIComponent(`${message}\n\n${name}\n${email}`)}`
