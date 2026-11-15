@@ -25,7 +25,7 @@ import Work from '@/sections/Work'
 
 function Home() {
   useEffect(() => {
-    document.title = 'Sushil Yadav'
+    document.title = 'Sushil Yadav - Software Development Engineer'
   }, [])
 
   return (
