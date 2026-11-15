@@ -6,21 +6,21 @@ import { profile } from '@/data/profile'
 import { services } from '@/data/services'
 import { work } from '@/data/work'
 
-// "Ask Sushil": an ink capsule floating at the bottom of the screen, with answers in a card
-// above it. Built from the site's own motifs: a typewriter caret like the project spec cards,
-// keycaps like the About toolkit, numbered entries with a blue rule like the Resume, answers
-// that ink in word by word like the About lead, and link rows with the Work list's letter wave.
+// "Ask Sushil": a frosted search bar floating at the bottom of the screen, with a soft moving glow,
+// and the answers in a card above it: numbered questions with a blue rule (like the Resume),
+// answers that ink in word by word (like the About lead) and link rows with the Work list's wave.
 // Questions go to /api/chat, where a tiny matching model picks one of the answers Sushil wrote
-// (assistant/knowledge.js), so visitors download nothing and the answers stay accurate.
+// (assistant/knowledge.js); on static hosts the same model runs in the browser instead.
 
-const PROMPTS = ['what does Sushil build?', 'is he free for a project?', 'tell me about NeuroVault', 'what’s his stack?', 'how do I reach him?']
-const STARTERS = ['What has Sushil built?', 'What’s his tech stack?', 'Is he available for freelance?']
+const PROMPTS = ['Ask me anything about Sushil', 'What does Sushil build?', 'Is he free for a project?', 'Tell me about NeuroVault', 'What’s his tech stack?']
 const OFFLINE = { text: `I can’t answer right now. You can reach Sushil directly at ${profile.email}.`, links: [{ label: 'Contact', href: '/contact' }] }
 const EASE = 'ease-[cubic-bezier(0.16,1,0.3,1)]'
 const SPRING = 'ease-[cubic-bezier(0.34,1.56,0.64,1)]'
 const pad = (n) => String(n).padStart(2, '0')
 
-// A one-line note beside each link, taken from the site's own pages
+const STARTERS = ['What has Sushil built?', 'What’s his tech stack?', 'Is he available for freelance?']
+
+// A one-line note under each link card, taken from the site's own pages
 const NOTES = {
   '/contact': 'Send a message. Replies usually within a day.',
   '/resume': 'Experience, education and a downloadable PDF.',
@@ -67,7 +67,7 @@ async function ask(question) {
       reply = await askLocally(question)
     }
   }
-  const wait = 380 - (performance.now() - started)
+  const wait = 520 - (performance.now() - started)
   if (wait > 0) await new Promise((r) => setTimeout(r, wait))
   return reply
 }
@@ -83,28 +83,25 @@ function Key({ children, className = '' }) {
   )
 }
 
-// Placeholder that types an example question, pauses, then erases it, with a blinking caret
-function Typewriter({ hidden }) {
-  const [text, setText] = useState('')
+const Icon = ({ d, className = 'size-4' }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
+    <path d={d} />
+  </svg>
+)
+
+// The placeholder rolls through example questions, each sliding up into place
+function RollingPlaceholder({ hidden }) {
+  const [i, setI] = useState(0)
   useEffect(() => {
     if (hidden) return
-    let p = 0, n = 0, dir = 1, t
-    const step = () => {
-      const full = PROMPTS[p]
-      n += dir
-      setText(full.slice(0, n))
-      let delay = dir > 0 ? 55 + Math.random() * 50 : 22
-      if (dir > 0 && n >= full.length) { dir = -1; delay = 1800 }
-      else if (dir < 0 && n <= 0) { dir = 1; p = (p + 1) % PROMPTS.length; delay = 350 }
-      t = setTimeout(step, delay)
-    }
-    t = setTimeout(step, 600)
-    return () => clearTimeout(t)
+    const t = setInterval(() => setI((n) => (n + 1) % PROMPTS.length), 3000)
+    return () => clearInterval(t)
   }, [hidden])
   return (
-    <span aria-hidden="true" className={`pointer-events-none absolute inset-0 flex items-center font-mono text-[0.95rem] text-canvas/55 transition-opacity duration-200 ${hidden ? 'opacity-0' : 'opacity-100'}`}>
-      <span className="truncate">{text}</span>
-      <span className="ml-0.5 text-accent motion-safe:animate-blink">▍</span>
+    <span aria-hidden="true" className={`pointer-events-none absolute inset-0 flex items-center overflow-hidden text-muted transition-opacity duration-200 ${hidden ? 'opacity-0' : 'opacity-100'}`}>
+      <span key={i} className="truncate motion-safe:animate-[rise_0.6s_cubic-bezier(0.16,1,0.3,1)_both]">
+        {PROMPTS[i]}
+      </span>
     </span>
   )
 }
@@ -225,7 +222,7 @@ function ChatWidget() {
     setLog((l) => l.map((x) => (x.q === q && !x.a ? { ...x, a } : x)))
   }
 
-  // Hide the capsule over the home page hero and once the footer is in view (unless it's in use)
+  // Hide the bar over the home page hero and once the footer is in view (unless it's in use)
   useEffect(() => {
     const footer = document.querySelector('footer')
     let footerIn = false
@@ -266,15 +263,16 @@ function ChatWidget() {
   useEffect(() => {
     const el = logRef.current
     const last = el?.querySelector('article:last-of-type')
-    if (el && last) el.scrollTo({ top: last.offsetTop - 24, behavior: 'smooth' })
+    if (el && last) el.scrollTo({ top: last.offsetTop - 16, behavior: 'smooth' })
   }, [log.length, answered, open])
 
   const hidden = away && !open && !focused
+  const lit = focused || open
 
   return (
     <div
       ref={rootRef}
-      className={`fixed inset-x-0 bottom-3 z-50 mx-auto w-[min(38rem,calc(100vw-1.5rem))] transition-[opacity,translate] duration-500 md:bottom-6 motion-reduce:transition-none print:hidden ${EASE} ${hidden ? 'pointer-events-none translate-y-8 opacity-0' : 'translate-y-0 opacity-100'}`}
+      className={`fixed inset-x-0 bottom-3 z-50 mx-auto w-[min(40rem,calc(100vw-1.5rem))] transition-[opacity,translate,filter] duration-500 md:bottom-6 motion-reduce:transition-none print:hidden ${EASE} ${hidden ? 'pointer-events-none translate-y-8 opacity-0 blur-sm' : 'translate-y-0 opacity-100 blur-0'}`}
     >
       {/* Answer card */}
       <section
@@ -330,55 +328,58 @@ function ChatWidget() {
         </p>
       </section>
 
-      {/* Ink capsule */}
-      <form
-        role="search"
-        onSubmit={(e) => {
-          e.preventDefault()
-          send(draft)
-        }}
-        className={`flex h-14 items-center gap-3 rounded-full bg-ink pr-2 pl-2 text-canvas shadow-[0_20px_50px_-20px_rgb(0_0_0/0.6)] ring-accent/60 transition-shadow duration-300 ${focused ? 'ring-2' : ''}`}
-      >
-        <span className="flex h-10 shrink-0 items-center gap-2 rounded-full bg-canvas/10 px-3.5 font-mono text-xs tracking-wide uppercase">
-          <span className="text-accent">›</span>
-          ask
-        </span>
-        <div className="relative min-w-0 flex-1">
-          <label htmlFor="ask-input" className="sr-only">
-            Ask anything about Sushil
-          </label>
-          <input
-            id="ask-input"
-            ref={inputRef}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onFocus={() => {
-              setFocused(true)
-              setOpen(true)
-            }}
-            onBlur={() => setFocused(false)}
-            maxLength={300}
-            autoComplete="off"
-            spellCheck="false"
-            enterKeyHint="send"
-            placeholder={focused ? 'type a question…' : ''}
-            className="relative z-10 w-full bg-transparent py-2 font-mono text-[0.95rem] text-canvas caret-accent outline-none placeholder:text-canvas/40"
-          />
-          <Typewriter hidden={draft.length > 0 || focused} />
-        </div>
-        <span className="hidden shrink-0 items-center gap-1 text-canvas/50 md:flex">
-          <Key>{mac ? '⌘' : 'Ctrl'}</Key>
-          <Key>K</Key>
-        </span>
-        <button
-          type="submit"
-          aria-label="Ask"
-          disabled={busy}
-          className="grid h-10 w-12 shrink-0 cursor-pointer place-items-center rounded-full bg-accent text-canvas transition-[translate,background-color] duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50"
+      {/* Search bar, with a soft moving glow around it */}
+      <div className="relative">
+        <span
+          aria-hidden="true"
+          className={`absolute -inset-[3px] rounded-[1.45rem] bg-[linear-gradient(90deg,var(--color-accent),var(--color-accent-soft),var(--color-accent))] bg-[length:200%_100%] blur-[6px] transition-opacity duration-500 motion-safe:animate-[glow-shift_4s_linear_infinite] ${lit ? 'opacity-70' : 'opacity-25'}`}
+        />
+        <form
+          role="search"
+          onSubmit={(e) => {
+            e.preventDefault()
+            send(draft)
+          }}
+          className="relative flex h-[3.75rem] items-center gap-3 rounded-[1.25rem] border border-line bg-paper/90 pr-2.5 pl-5 shadow-[0_12px_40px_-14px_rgb(0_0_0/0.35)] backdrop-blur-xl"
         >
-          <span className="font-mono text-base leading-none">↵</span>
-        </button>
-      </form>
+          <div className="relative min-w-0 flex-1">
+            <label htmlFor="ask-input" className="sr-only">
+              Ask anything about Sushil
+            </label>
+            <input
+              id="ask-input"
+              ref={inputRef}
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              onFocus={() => {
+                setFocused(true)
+                setOpen(true)
+              }}
+              onBlur={() => setFocused(false)}
+              maxLength={300}
+              autoComplete="off"
+              spellCheck="false"
+              enterKeyHint="send"
+              placeholder={focused ? 'Type your question…' : ''}
+              className="relative z-10 w-full bg-transparent py-2 text-[1.02rem] text-ink caret-accent outline-none placeholder:text-muted"
+            />
+            <RollingPlaceholder hidden={draft.length > 0 || focused} />
+          </div>
+          <span className="hidden shrink-0 rounded-md bg-canvas px-1.5 py-0.5 text-xs font-medium text-muted md:inline">{mac ? '⌘K' : 'Ctrl K'}</span>
+          <button
+            type="submit"
+            aria-label="Ask"
+            disabled={busy || !draft.trim()}
+            className={`grid size-10 shrink-0 cursor-pointer place-items-center rounded-xl bg-accent text-canvas transition-[scale,opacity] duration-300 hover:scale-105 active:scale-95 disabled:cursor-default disabled:opacity-40 disabled:hover:scale-100 ${SPRING}`}
+          >
+            {busy ? (
+              <span className="size-4 rounded-full border-2 border-canvas/40 border-t-canvas motion-safe:animate-spin" />
+            ) : (
+              <Icon d="M12 19V5M5 12l7-7 7 7" className="size-[18px]" />
+            )}
+          </button>
+        </form>
+      </div>
     </div>
   )
 }

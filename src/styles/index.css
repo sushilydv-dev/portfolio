@@ -147,6 +147,13 @@
   }
 }
 
+/* Assistant bar: its soft glow slowly slides around */
+@keyframes glow-shift {
+  to {
+    background-position: 200% 0;
+  }
+}
+
 /* Work page: rows rise in one after another */
 @keyframes row-in {
   from {
