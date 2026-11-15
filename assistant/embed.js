@@ -1,5 +1,3 @@
-import { readFileSync } from 'node:fs'
-
 // Turns a sentence into a 64-number "meaning" vector with potion-base-2M (a static embedding
 // model): split the text into word pieces exactly like the model's BERT tokenizer, look up each
 // piece's vector, average them and scale to length 1. Similar meanings give similar vectors.
@@ -37,10 +35,10 @@ function basicTokens(text) {
   return out
 }
 
-export function loadModel(dir) {
-  const vocab = JSON.parse(readFileSync(new URL('vocab.json', dir), 'utf8'))
-  const { dim } = JSON.parse(readFileSync(new URL('meta.json', dir), 'utf8'))
-  const raw = readFileSync(new URL('vectors.bin', dir))
+// Builds the model from its files' contents: vocab (token list), dim, and the vectors.bin bytes
+// (Uint8Array/Buffer). No file access here, so it runs both on the server and in the browser.
+export function buildModel({ vocab, dim, bytes }) {
+  const raw = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   const ids = new Map(vocab.map((t, i) => [t, i]))
   const stride = 4 + dim
 
@@ -71,8 +69,8 @@ export function loadModel(dir) {
     for (const word of basicTokens(text)) {
       for (const id of pieces(word)) {
         const at = id * stride
-        const scale = raw.readFloatLE(at)
-        for (let c = 0; c < dim; c++) v[c] += raw.readInt8(at + 4 + c) * scale
+        const scale = raw.getFloat32(at, true)
+        for (let c = 0; c < dim; c++) v[c] += raw.getInt8(at + 4 + c) * scale
         n++
       }
     }

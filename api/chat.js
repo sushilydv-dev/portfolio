@@ -1,4 +1,5 @@
 import { createAssistant } from '../assistant/assistant.js'
+import { loadModelFromDisk } from '../assistant/node.js'
 
 // POST /api/chat  { question }  →  { id, answer, links }
 // A Vercel serverless function (Node runtime). The 2 MB model lives on the server, so visitors
@@ -51,7 +52,7 @@ export default async function handler(req, res) {
   }
   if (typeof question !== 'string' || !question.trim()) return send(res, 400, { error: 'Missing question' })
 
-  assistant ??= createAssistant()
+  assistant ??= createAssistant(loadModelFromDisk())
   const { id, answer, links } = assistant.reply(question)
   return send(res, 200, { id, answer, links })
 }

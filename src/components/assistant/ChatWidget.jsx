@@ -32,19 +32,40 @@ const NOTES = {
 }
 const noteFor = (href) => NOTES[href] ?? (href.startsWith('mailto:') ? href.slice(7) : href.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])
 
+// Set once /api/chat turns out not to exist (static hosts like GitHub Pages): from then on the
+// assistant runs in the browser and the server isn't asked again.
+let serverless = false
+
+async function askLocally(question) {
+  try {
+    const { localReply } = await import('./localAssistant.js')
+    const data = await localReply(question)
+    return { text: data.answer, links: data.links ?? [] }
+  } catch {
+    return OFFLINE
+  }
+}
+
 async function ask(question) {
   const started = performance.now()
   let reply = OFFLINE
-  try {
-    const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) })
-    if (res.ok) {
-      const data = await res.json()
-      reply = { text: data.answer, links: data.links ?? [] }
-    } else if (res.status === 429) {
-      reply = { text: 'That’s a lot of questions! Give me a minute and try again.', links: [] }
+  if (serverless) reply = await askLocally(question)
+  else {
+    try {
+      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }) })
+      if (res.ok) {
+        const data = await res.json()
+        reply = { text: data.answer, links: data.links ?? [] }
+      } else if (res.status === 429) {
+        reply = { text: 'That’s a lot of questions! Give me a minute and try again.', links: [] }
+      } else if (res.status === 404 || res.status === 405) {
+        serverless = true
+        reply = await askLocally(question)
+      }
+    } catch {
+      // Network error: try the in-browser assistant (falls back to OFFLINE if that fails too)
+      reply = await askLocally(question)
     }
-  } catch {
-    /* offline or not deployed: OFFLINE */
   }
   const wait = 380 - (performance.now() - started)
   if (wait > 0) await new Promise((r) => setTimeout(r, wait))
