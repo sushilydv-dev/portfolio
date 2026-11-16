@@ -8,6 +8,10 @@ export function useSmoothScroll() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
 
     const lenis = new Lenis({ autoRaf: true, anchors: true })
-    return () => lenis.destroy()
+    window.__lenis = lenis // lets overlays (the mobile menu) pause the page scroll
+    return () => {
+      lenis.destroy()
+      delete window.__lenis
+    }
   }, [])
 }

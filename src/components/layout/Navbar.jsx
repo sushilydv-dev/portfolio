@@ -5,6 +5,7 @@ import { useMagnetic } from '@/hooks/useMagnetic'
 import { sectionHref, usePath } from '@/hooks/usePath'
 import SiteLink from '@/components/ui/SiteLink'
 import ThemeToggle from '@/components/ui/ThemeToggle'
+import MobileMenu from '@/components/layout/MobileMenu'
 
 function NavLink({ href, children }) {
   const ref = useMagnetic({ radius: 40, strength: 0.15, maxOffset: 6, stretch: 0.04, group: 'nav' })
@@ -37,7 +38,7 @@ function Navbar() {
         >
           {profile.name}
         </SiteLink>
-        <div className="flex items-center gap-9">
+        <div className="flex items-center gap-4 md:gap-9">
           <ul className="hidden gap-9 md:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -46,6 +47,7 @@ function Navbar() {
             ))}
           </ul>
           <ThemeToggle />
+          <MobileMenu />
         </div>
       </div>
     </header>

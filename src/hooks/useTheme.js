@@ -1,12 +1,10 @@
 import { useCallback, useState } from 'react'
 import { flushSync } from 'react-dom'
 
-// Renamed from 'theme' so earlier saved choices (or system dark mode) no longer override the light default
-const STORAGE_KEY = 'theme-choice'
-
 const current = () => (document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light')
 
-// Light/dark theme stored on <html data-theme>; light by default. index.html sets it before first paint.
+// Light/dark theme stored on <html data-theme>. Every visit starts light (set in index.html before first paint);
+// the choice is not saved, so a reload goes back to light.
 // `toggle({ x, y })` reveals the new theme in a circle growing from that point (View Transitions),
 // and falls back to an instant switch where unsupported or when reduced motion is on.
 export function useTheme() {
@@ -18,11 +16,6 @@ export function useTheme() {
       const apply = () => {
         document.documentElement.dataset.theme = next
         flushSync(() => setTheme(next))
-        try {
-          localStorage.setItem(STORAGE_KEY, next)
-        } catch {
-          // storage blocked; the theme just won't be remembered
-        }
       }
 
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
